@@ -14,11 +14,11 @@
         --card-bg: #ffffff; /* White card */
         --input-bg: #f0f2f5; /* Light grey input */
         --label-color: #495057; /* Muted grey label */
-        --table-header: linear-gradient(45deg, #007bff, #0056b3); /* Blue gradient header */
+        --table-header: linear-gradient(45deg, #495057, #343a40); /* <-- CHANGED: Blue to Dark Grey Gradient */
         --table-bg: #ffffff; /* White table rows */
         --hover-bg: #e9ecef; /* Light grey hover */
-        --result-bg: #e6f7ff; /* Light blue result background */
-        --result-text: #007bff; /* Blue result text */
+        --result-bg: #f0f2f5; /* <-- CHANGED: Light blue to Light Grey */
+        --result-text: #212529; /* <-- CHANGED: Blue to Dark Text */
         --button-buy-bg: linear-gradient(45deg, #28a745, #218838); /* Green buy button */
         --button-buy-hover: linear-gradient(45deg, #218838, #28a745);
         --button-sell-bg: linear-gradient(45deg, #dc3545, #c82333); /* Red sell button */
@@ -30,9 +30,9 @@
         --dropdown-text-color: #212529;
         --copy-icon-color: #6c757d;
         --border-color: #dee2e6; /* Light grey border */
-        --focus-glow: rgba(0, 123, 255, 0.25); /* Blue glow */
+        --focus-glow: rgba(0, 0, 0, 0.25); /* <-- CHANGED: Blue Glow to Black Glow */
         
-        --active-currency-bg: linear-gradient(45deg, #007bff, #0056b3);
+        --active-currency-bg: linear-gradient(45deg, #495057, #343a40); /* <-- CHANGED: Blue to Dark Grey Gradient */
         --active-currency-color: white;
     }
 
@@ -43,11 +43,11 @@
         --card-bg: #1f2a3c; /* Dark card */
         --input-bg: #2a3b4c; /* Darker input */
         --label-color: #bbd0e0; /* Muted light blue label */
-        --table-header: linear-gradient(45deg, #3f51b5, #5c6bc0); /* Darker blue gradient header */
+        --table-header: linear-gradient(45deg, #4a5a6a, #3c4a5a); /* <-- CHANGED: Darker Blue to Darker Grey Gradient */
         --table-bg: #1f2a3c; /* Dark table rows */
         --hover-bg: #2a3b4c; /* Darker grey hover */
         --result-bg: #2a3b4c; /* Dark result background */
-        --result-text: #8be0ff; /* Light blue result text */
+        --result-text: #e0e0e0; /* <-- CHANGED: Light Blue to Light Grey Text */
         --button-buy-bg: linear-gradient(45deg, #388e3c, #4caf50); /* Dark green buy button */
         --button-buy-hover: linear-gradient(45deg, #4caf50, #388e3c);
         --button-sell-bg: linear-gradient(45deg, #d32f2f, #ef5350); /* Dark red sell button */
@@ -58,10 +58,10 @@
         --dropdown-hover-bg: #3a4b5c;
         --dropdown-text-color: #e0e0e0;
         --copy-icon-color: #bbd0e0;
-        --border-color: #3f51b5; /* Darker border */
-        --focus-glow: rgba(139, 224, 255, 0.35); /* Lighter blue glow */
+        --border-color: #5a6268; /* <-- CHANGED: Darker Blue to Darker Grey border */
+        --focus-glow: rgba(224, 224, 224, 0.35); /* <-- CHANGED: Lighter Blue Glow to Lighter Grey Glow */
         
-        --active-currency-bg: linear-gradient(45deg, #3f51b5, #5c6bc0);
+        --active-currency-bg: linear-gradient(45deg, #4a5a6a, #3c4a5a); /* <-- CHANGED: Darker Blue to Darker Grey Gradient */
         --active-currency-color: white;
     }
 
@@ -147,14 +147,14 @@
     input[type="number"]:focus,
     input[type="text"]:focus,
     .custom-select:focus {
-        border-color: #007bff;
+        border-color: #212529; /* CHANGED: Black border on focus */
         outline: none;
         box-shadow: 0 0 0 4px var(--focus-glow);
     }
 
     body.dark input[type="number"]:focus,
     body.dark input[type="text"]:focus {
-        border-color: #8be0ff;
+        border-color: #e0e0e0; /* CHANGED: White/Light Grey border on focus in dark mode */
     }
 
     /* Styles for Selection Buttons (Currency & Risk) */
@@ -366,11 +366,11 @@
     }
 
     body:not(.dark) .dark-toggle {
-        background: linear-gradient(45deg, #007bff, #0056b3);
+        background: linear-gradient(45deg, #212529, #495057); /* <-- CHANGED: Blue to Dark Grey Gradient for Toggle */
     }
 
     body:not(.dark) .dark-toggle:hover {
-        background: linear-gradient(45deg, #0056b3, #007bff);
+        background: linear-gradient(45deg, #495057, #212529); /* <-- CHANGED: Blue to Dark Grey Gradient for Toggle Hover */
     }
 
     .fixed-settings-buttons button svg {
@@ -395,9 +395,9 @@
 
     /* بهبود هاور دکمه کپی */
     .copy-icon:hover {
-        fill: #007bff;
+        fill: #212529; /* CHANGED: Blue to Black/Dark Grey */
         transform: scale(1.2);
-        filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.5));
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); /* CHANGED: Blue Shadow to Black Shadow */
     }
     
     /* New styles for copy message */
@@ -406,7 +406,7 @@
         top: 50%; /* Center vertically */
         right: 120%; /* Position to the left of the icon (in LTR context) */
         transform: translateY(-50%);
-        background: #007bff;
+        background: #212529; /* CHANGED: Blue to Black */
         color: white;
         padding: 4px 8px;
         border-radius: 6px;
@@ -471,6 +471,12 @@
 </style>
 </head>
 <body>
+    <div class="fixed-settings-buttons">
+        <button class="dark-toggle" onclick="document.body.classList.toggle('dark')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10c0-5.52-4.48-10-10-10zm0 18a8 8 0 118-8 8 8 0 01-8 8zm0-15a7 7 0 00-6.15 10.43c.12-.47.18-.96.18-1.47 0-4.14-3.36-7.5-7.5-7.5A9.91 9.91 0 0112 5z"/></svg>
+            Toggle Dark Mode
+        </button>
+    </div>
     <div class="container" id="mainCalculatorContainer">
         <section id="forexCalculator">
             <div class="input-group">
