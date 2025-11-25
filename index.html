@@ -2,770 +2,446 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Modern Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Gold & US30 Pro Calc</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    /* Global Styles & Variables */
+    /* --- Global Variables --- */
     :root {
-        /* Light Mode Colors */
-        --bg-color: #f8f9fa; /* Light background */
-        --text-color: #212529; /* Dark text */
-        --card-bg: #ffffff; /* White card */
-        --input-bg: #f0f2f5; /* Light grey input */
-        --label-color: #495057; /* Muted grey label */
-        --table-header: linear-gradient(45deg, #007bff, #0056b3); /* Blue gradient header */
-        --table-bg: #ffffff; /* White table rows */
-        --hover-bg: #e9ecef; /* Light grey hover */
-        --result-bg: #e6f7ff; /* Light blue result background */
-        --result-text: #007bff; /* Blue result text */
-        --button-buy-bg: linear-gradient(45deg, #28a745, #218838); /* Green buy button */
-        --button-buy-hover: linear-gradient(45deg, #218838, #28a745);
-        --button-sell-bg: linear-gradient(45deg, #dc3545, #c82333); /* Red sell button */
-        --button-sell-hover: linear-gradient(45deg, #c82333, #dc3545);
-        --toggle-button-bg: #6c757d; /* Grey toggle button */
-        --toggle-button-hover: #5a6268;
-        --dropdown-bg: #ffffff;
-        --dropdown-hover-bg: #f8f9fa;
-        --dropdown-text-color: #212529;
-        --copy-icon-color: #6c757d;
-        --border-color: #dee2e6; /* Light grey border */
-        --focus-glow: rgba(0, 123, 255, 0.25); /* Blue glow */
+        /* Layout & Basics */
+        --bg-color: #f0f2f5;
+        --card-bg: #ffffff;
+        --text-color: #1c1e21;
+        --input-bg: #f8f9fa;
+        --border-color: #dee2e6;
+        --label-color: #606770;
         
-        --active-currency-bg: linear-gradient(45deg, #007bff, #0056b3);
-        --active-currency-color: white;
+        /* Dynamic Theme Variables (Default: Gold) */
+        --theme-primary: #FFD700; 
+        --theme-gradient: linear-gradient(135deg, #FFD700, #DAA520);
+        --table-header-bg: linear-gradient(45deg, #FFD700, #DAA520);
+        --table-header-text: #000000;
+        --active-btn-text: #000000;
+        --focus-glow: rgba(218, 165, 32, 0.35);
+        
+        --result-bg: #fffbf0;
+        --result-text: #b8860b;
+        
+        --btn-buy-bg: linear-gradient(45deg, #28a745, #218838);
+        --btn-sell-bg: linear-gradient(45deg, #dc3545, #c82333);
     }
 
-    /* Dark Mode Overrides */
+    /* Dark Mode */
     body.dark {
-        --bg-color: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); /* Deep dark blue gradient */
-        --text-color: #e0e0e0; /* Light grey text */
-        --card-bg: #1f2a3c; /* Dark card */
-        --input-bg: #2a3b4c; /* Darker input */
-        --label-color: #bbd0e0; /* Muted light blue label */
-        --table-header: linear-gradient(45deg, #3f51b5, #5c6bc0); /* Darker blue gradient header */
-        --table-bg: #1f2a3c; /* Dark table rows */
-        --hover-bg: #2a3b4c; /* Darker grey hover */
-        --result-bg: #2a3b4c; /* Dark result background */
-        --result-text: #8be0ff; /* Light blue result text */
-        --button-buy-bg: linear-gradient(45deg, #388e3c, #4caf50); /* Dark green buy button */
-        --button-buy-hover: linear-gradient(45deg, #4caf50, #388e3c);
-        --button-sell-bg: linear-gradient(45deg, #d32f2f, #ef5350); /* Dark red sell button */
-        --button-sell-hover: linear-gradient(45deg, #ef5350, #d32f2f);
-        --toggle-button-bg: #4a5a6a; /* Dark grey toggle button */
-        --toggle-button-hover: #5c6c7c;
-        --dropdown-bg: #2a3b4c;
-        --dropdown-hover-bg: #3a4b5c;
-        --dropdown-text-color: #e0e0e0;
-        --copy-icon-color: #bbd0e0;
-        --border-color: #3f51b5; /* Darker border */
-        --focus-glow: rgba(139, 224, 255, 0.35); /* Lighter blue glow */
+        --bg-color: #18191a;
+        --card-bg: #242526;
+        --text-color: #e4e6eb;
+        --input-bg: #3a3b3c;
+        --border-color: #3e4042;
+        --label-color: #b0b3b8;
         
-        --active-currency-bg: linear-gradient(45deg, #3f51b5, #5c6bc0);
-        --active-currency-color: white;
+        --result-bg: #2a2b2c;
     }
+
+    /* --- Reset & Layout --- */
+    * { box-sizing: border-box; outline: none; }
 
     body {
         font-family: 'Poppins', sans-serif;
-        background: var(--bg-color);
-        padding: 40px;
+        /* ---------- CHANGED: new background with subtle texture ---------- */
+        /* Keep var(--bg-color) for base (so dark mode still works), then add layered decorative gradients */
+        background-color: var(--bg-color);
+        background-image:
+            /* soft diagonal top-left light overlay */
+            linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0) 60%),
+            /* repeating fine diagonal lines for texture */
+            repeating-linear-gradient(135deg, rgba(255,255,255,0.18) 0 1px, transparent 1px 8px);
+        background-blend-mode: overlay, normal;
+        background-attachment: fixed;
         color: var(--text-color);
-        text-align: center;
-        transition: background 0.4s ease, color 0.4s ease;
         margin: 0;
-        display: flex;
-        flex-direction: column;
         min-height: 100vh;
-        direction: ltr; /* Ensure LTR */
-        font-size: 17px;
-        line-height: 1.6;
+        display: flex; 
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        transition: background 0.3s ease;
     }
 
     .container {
         background: var(--card-bg);
-        max-width: 700px;
-        margin: 40px auto;
-        padding: 40px 30px;
+        width: 100%;
+        max-width: 500px;
+        padding: 35px 30px;
         border-radius: 20px;
         box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-        transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
-        flex-grow: 1;
         border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    /* --- Inputs (Spinner Removed) --- */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border-color);
+        background: var(--input-bg);
+        color: var(--text-color);
+        font-weight: 500;
+        transition: all 0.2s;
+        display: block;
+    }
+
+    input[type="number"]:focus {
+        border-color: var(--theme-primary);
+        box-shadow: 0 0 0 4px var(--focus-glow);
     }
 
     label {
         display: block;
-        text-align: left;
-        margin: 20px 0 8px;
+        margin: 18px 0 8px;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 15px;
         color: var(--label-color);
-    }
-
-    input[type="number"] {
-        -moz-appearance: textfield;
-        appearance: none;
-    }
-
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    input[type="number"],
-    input[type="text"] {
-        width: 100%;
-        padding: 14px 18px;
-        font-size: 16px;
-        border-radius: 12px;
-        border: 1.5px solid var(--border-color);
-        background: var(--input-bg);
-        color: var(--text-color);
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-sizing: border-box;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        text-align: left;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
-    }
-
-    input[type="number"]::placeholder,
-    input[type="text"]::placeholder {
-        color: #90a4ae;
-        font-style: italic;
         text-align: left;
     }
 
-    body.dark input[type="number"]::placeholder,
-    body.dark input[type="text"]::placeholder {
-        color: #7b8b9a;
-    }
-
-    input[type="number"]:focus,
-    input[type="text"]:focus,
-    .custom-select:focus {
-        border-color: #007bff;
-        outline: none;
-        box-shadow: 0 0 0 4px var(--focus-glow);
-    }
-
-    body.dark input[type="number"]:focus,
-    body.dark input[type="text"]:focus {
-        border-color: #8be0ff;
-    }
-
-    /* Styles for Selection Buttons (Currency & Risk) */
-    .currency-selection {
-        /* تغییر: حذف flex اصلی برای Currency Selection */
-        margin-bottom: 20px;
-    }
-    
-    .currency-row {
-        /* اضافه شده: ایجاد ردیف‌های داخلی با فلکس */
+    /* --- Selection Buttons --- */
+    .row-group {
         display: flex;
-        gap: 15px;
-        margin-bottom: 15px; /* فاصله بین ردیف‌های دکمه‌ها */
-    }
-    
-    .currency-row:last-child {
-        margin-bottom: 0;
-    }
-    
-    .risk-selection {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
+        gap: 12px;
+        margin-bottom: 5px;
     }
 
-    .currency-selection button,
-    .risk-selection button {
+    .choice-btn {
         flex: 1;
-        padding: 14px 18px;
-        font-size: 16px;
+        padding: 14px;
+        font-size: 15px;
         font-weight: 600;
         border-radius: 12px;
         border: 1.5px solid var(--border-color);
         background: var(--input-bg);
         color: var(--label-color);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
     }
 
-    /* بهبود هاور دکمه‌های جفت ارز و ریسک */
-    .currency-selection button:hover,
-    .risk-selection button:hover {
-        background-color: var(--hover-bg); 
-        transform: translateY(-1px); /* کمی بالا آمدن */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* افزودن سایه محو */
-        border-color: #ced4da; /* مرز کمی تیره‌تر برای کنتراست */
+    .choice-btn:hover {
+        background: var(--border-color);
     }
 
-    body.dark .currency-selection button:hover,
-    body.dark .risk-selection button:hover {
-        box-shadow: 0 4px 10px rgba(255,255,255,0.05); /* سایه در دارک مود */
-        border-color: #4a5a6a; 
+    /* Active States */
+    .choice-btn.active {
+        background: var(--theme-gradient);
+        color: var(--active-btn-text);
+        border: none;
+        box-shadow: 0 4px 15px var(--focus-glow);
+        transform: translateY(-1px);
     }
-    /* ------------------------------------------ */
-
-    .currency-selection button.active,
-    .risk-selection button.active {
-        background: var(--active-currency-bg);
-        color: var(--active-currency-color);
-        border-color: transparent;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    
+    /* Specific Active Colors Overrides (Gold/Blue) */
+    #btnXAUUSD.active {
+        background: linear-gradient(135deg, #FFD700, #FDB931);
+        color: #000000;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+    #btnUS30.active {
+        background: linear-gradient(135deg, #003366, #0056b3); 
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 51, 102, 0.4);
     }
 
-    /* Button Group */
-    .button-group {
+    /* --- Action Buttons --- */
+    .action-group {
         display: flex;
         gap: 15px;
         margin-top: 30px;
-        direction: ltr; /* Ensure LTR */
     }
 
-    button {
+    .action-btn {
         flex: 1;
-        border: none;
-        color: white;
-        padding: 15px 25px;
+        padding: 16px;
         font-size: 17px;
-        font-weight: 600;
+        font-weight: 700;
+        color: white;
+        border: none;
         border-radius: 12px;
         cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        font-family: 'Poppins', sans-serif;
-        letter-spacing: 0.5px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    button.buy {
-        background: var(--button-buy-bg);
-    }
+    .btn-buy { background: var(--btn-buy-bg); }
+    .btn-sell { background: var(--btn-sell-bg); }
 
-    button.buy:hover {
-        background: var(--button-buy-hover);
-        transform: translateY(-3px);
-        /* بهبود یافته: سایه بزرگتر و تیره تر */
-        box-shadow: 0 15px 30px rgba(40, 167, 69, 0.3); 
-    }
-
-    button.sell {
-        background: var(--button-sell-bg);
-    }
-
-    button.sell:hover {
-        background: var(--button-sell-hover);
-        transform: translateY(-3px);
-        /* بهبود یافته: سایه بزرگتر و تیره تر */
-        box-shadow: 0 15px 30px rgba(220, 53, 69, 0.3); 
-    }
-
-    /* Result Section */
-    .result {
-        margin-top: 40px;
-        background: var(--result-bg);
-        padding: 30px 25px;
-        border-radius: 18px;
-        font-size: 18px;
-        color: var(--result-text);
-        font-weight: 600;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
-        text-align: left;
-        min-height: 250px;
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-        flex-direction: column;
-        border: 1px solid rgba(0,0,0,0.05);
-    }
-
-    .result span {
-        font-family: 'Poppins', sans-serif;
-    }
-
-    table {
-        width: 100%;
-        max-width: 100%;
-        margin: 20px auto;
-        border-collapse: separate;
-        border-spacing: 0 10px;
-        font-weight: 500;
-        font-size: 16px;
-        text-align: left;
-        transition: background 0.4s ease, color 0.4s ease;
-    }
-
-    th, td {
-        padding: 15px 20px;
-        border-radius: 10px;
-        background: var(--table-bg);
-        color: var(--text-color);
-        transition: background 0.4s ease, color 0.4s ease, background-color 0.3s ease;
-        text-align: left;
-        font-family: 'Poppins', sans-serif;
-        border: 1px solid var(--border-color);
-        position: relative; /* Added for tooltip positioning */
-    }
-
-    th {
-        background: var(--table-header);
-        color: white;
-        text-align: left;
-        border: none;
-        font-weight: 600;
-    }
-
-    table tr:first-child th:first-child { border-top-left-radius: 10px; }
-    table tr:first-child th:last-child { border-top-right-radius: 10px; }
-    table tr:last-child td:first-child { border-bottom-left-radius: 10px; }
-    table tr:last-child td:last-child { border-bottom-right-radius: 10px; }
-
-    tr:hover td {
-        background-color: var(--hover-bg);
-    }
-
-    /* Fixed Settings Button (Dark Mode Toggle) */
-    .fixed-settings-buttons {
-        position: fixed;
-        top: 25px;
-        right: 25px; /* Positioned to the right for LTR */
-        left: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        z-index: 1000;
-        transition: background 0.4s ease, box-shadow 0.4s ease;
-    }
-
-    .fixed-settings-buttons button {
-        width: 180px;
-        padding: 12px 18px;
-        font-size: 16px;
-        font-weight: 500;
-        border-radius: 15px;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        background: var(--toggle-button-bg);
-        color: white;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        position: relative;
-    }
-
-    .fixed-settings-buttons button:hover {
-        background: var(--toggle-button-hover);
+    .action-btn:active { transform: scale(0.98); }
+    .action-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 9px 18px rgba(0,0,0,0.15);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
-    body:not(.dark) .dark-toggle {
-        background: linear-gradient(45deg, #007bff, #0056b3);
+    /* --- Result Area & Table --- */
+    .result-card {
+        width: 100%; 
+        margin-top: 30px;
+        background: var(--result-bg);
+        padding: 0;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        display: none; 
+        animation: fadeIn 0.3s ease-out;
     }
 
-    body:not(.dark) .dark-toggle:hover {
-        background: linear-gradient(45deg, #0056b3, #007bff);
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    table { width: 100%; border-collapse: collapse; }
+    
+    /* Dynamic Header Style */
+    th {
+        background: var(--table-header-bg); /* Dynamic Background (Gold/Blue Gradient) */
+        color: var(--table-header-text); /* Dynamic Text Color (Black/White) */
+        padding: 15px;
+        text-align: left;
+        font-weight: 700; 
+        font-size: 16px;
     }
 
-    .fixed-settings-buttons button svg {
-        width: 18px;
-        height: 18px;
-        fill: white;
+    td {
+        padding: 14px 15px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 16px;
+    }
+    
+    tr:last-child td { border-bottom: none; }
+    
+    td:last-child { 
+        text-align: right; 
+        font-weight: 700; 
+        color: var(--result-text); 
     }
 
-    /* Copy Icon */
+    .profit-val { color: #28a745 !important; }
+    .loss-val { color: #dc3545 !important; }
+
+    /* --- Copy Icon --- */
     .copy-icon {
+        width: 18px; height: 18px;
         cursor: pointer;
-        margin-left: 10px;
-        width: 18px;
-        height: 18px;
+        fill: #adb5bd;
+        transition: fill 0.2s;
         vertical-align: middle;
-        fill: var(--copy-icon-color);
-        transition: all 0.3s ease;
-        position: relative; /* Important for positioning the message */
-        z-index: 10;
+        margin-left: 8px;
         display: inline-block;
     }
+    .copy-icon:hover { fill: var(--theme-primary); transform: scale(1.1); }
 
-    /* بهبود هاور دکمه کپی */
-    .copy-icon:hover {
-        fill: #007bff;
-        transform: scale(1.2);
-        filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.5));
-    }
-    
-    /* New styles for copy message */
-    .copy-message {
-        position: absolute;
-        top: 50%; /* Center vertically */
-        right: 120%; /* Position to the left of the icon (in LTR context) */
-        transform: translateY(-50%);
-        background: #007bff;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 12px;
-        white-space: nowrap;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 5; /* Below the icon */
-    }
-
-    .copy-message.show {
-        opacity: 1;
-    }
-    
-    .profit-row td {
-        color: #28a745;
-    }
-    
-    .loss-row td {
-        color: #dc3545;
-    }
-
-    .loss-label {
-        color: #dc3545;
-    }
-
-    .profit-label {
-        color: #28a745;
-    }
-
-    /* Responsive Adjustments (UNCHANGED, but ensures 2x2 on small screens too) */
-    @media (max-width: 768px) {
-        body { padding: 20px; font-size: 16px; }
-        .fixed-settings-buttons { top: 15px; right: 15px; gap: 10px; }
-        .fixed-settings-buttons button { width: 160px; padding: 10px 15px; font-size: 15px; border-radius: 14px; }
-        .container { padding: 30px 20px; border-radius: 18px; margin-top: 30px; }
-        label { font-size: 15px; margin: 18px 0 6px; }
-        input[type="number"], input[type="text"] { padding: 12px 15px; font-size: 15px; border-radius: 10px; }
-        .currency-row { gap: 10px; margin-bottom: 10px; } /* تنظیمات ریسپانسیو ردیف‌های جفت ارز */
-        .button-group { flex-direction: column; gap: 12px; margin-top: 25px; }
-        button { padding: 12px 20px; font-size: 16px; border-radius: 10px; }
-        .result { padding: 25px 20px; font-size: 17px; border-radius: 16px; margin-top: 30px; min-height: 220px; }
-        table { font-size: 15px; border-spacing: 0 8px; }
-        th, td { padding: 12px 18px; border-radius: 8px; }
-    }
-
-    @media (max-width: 480px) {
-        body { padding: 15px; font-size: 14px; }
-        .fixed-settings-buttons { position: static; margin: 0 auto 20px; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; padding: 0; box-shadow: none; background: none; }
-        .fixed-settings-buttons button { width: auto; flex: 1; min-width: 120px; padding: 10px 12px; font-size: 14px; border-radius: 12px; }
-        .fixed-settings-buttons button svg { display: none; }
-        .container { padding: 20px 15px; border-radius: 15px; margin-top: 20px; }
-        label { font-size: 14px; margin: 15px 0 5px; }
-        input[type="number"], input[type="text"], .custom-select { padding: 10px 12px; font-size: 14px; border-radius: 8px; }
-        .currency-row { gap: 8px; margin-bottom: 8px; } /* تنظیمات ریسپانسیو ردیف‌های جفت ارز */
-        .button-group { gap: 10px; }
-        button { padding: 10px 15px; font-size: 15px; border-radius: 8px; }
-        .result { padding: 15px 20px; font-size: 16px; border-radius: 14px; margin-top: 20px; min-height: 180px; }
-        table { font-size: 14px; border-spacing: 0 6px; }
-        th, td { padding: 10px 15px; border-radius: 8px; }
+    /* --- Mobile Optimization --- */
+    @media (max-width: 600px) {
+        body { padding: 10px; align-items: flex-start; }
+        .container {
+            padding: 20px 15px;
+            margin-top: 10px;
+        }
     }
 </style>
 </head>
 <body>
-    <div class="container" id="mainCalculatorContainer">
-        <section id="forexCalculator">
-            <div class="input-group">
-                <label>Currency Pair</label>
-                <div class="currency-selection">
-                    <div class="currency-row">
-                        <button id="btnUSDCAD" class="currency-button active" onclick="selectCurrency('USDCAD')">CAD</button>
-                        <button id="btnUSDJPY" class="currency-button" onclick="selectCurrency('USDJPY')">JPY</button>
-                    </div>
-                    <div class="currency-row">
-                        <button id="btnAUDUSD" class="currency-button" onclick="selectCurrency('AUDUSD')">AUD</button>
-                        <button id="btnNZDUSD" class="currency-button" onclick="selectCurrency('NZDUSD')">NZD</button>
-                    </div>
-                </div>
-            </div>
-            
-            <input type="hidden" id="currencyPair" value="USDCAD">
 
-            <div class="input-group">
-                <label for="forexAccountSize">Account Size ($)</label>
-                <input type="number" id="forexAccountSize" min="0.01" step="0.01">
-            </div>
-
-            <div class="input-group">
-                <label>Risk (%)</label>
-                <div class="risk-selection">
-                    <button id="btnRisk1" class="risk-button active" onclick="selectRisk(1)">1%</button>
-                    <button id="btnRisk05" class="risk-button" onclick="selectRisk(0.5)">0.5%</button>
-                </div>
-            </div>
-            <input type="hidden" id="forexRiskPercent" value="1"> 
-            
-            <div class="input-group">
-                <label for="forexEntryPrice">Entry Price</label>
-                <input type="number" id="forexEntryPrice" min="0.00000001" step="0.00000001">
-            </div>
-            <div class="input-group">
-                <label for="forexTpPips" id="takeProfitLabel" class="profit-label">TP (Pips)</label>
-                <input type="number" id="forexTpPips" min="0.1" step="0.1">
-            </div>
-            <div class="input-group">
-                <label for="forexStopPips" id="stopLossLabel" class="loss-label">SL (Pips)</label>
-                <input type="number" id="forexStopPips" min="0.1" step="0.1">
-            </div>
-            <div class="button-group">
-                <button class="sell" onclick="calculateForex('short')">Sell</button>
-                <button class="buy" onclick="calculateForex('long')">Buy</button>
-            </div>
-        </section>
-        <div id="output" class="result" style="display: none;">
+    <div class="container">
+        <label>Asset Class</label>
+        <div class="row-group">
+            <button id="btnXAUUSD" class="choice-btn active" onclick="selectCurrency('XAUUSD')">XAUUSD</button>
+            <button id="btnUS30" class="choice-btn" onclick="selectCurrency('US30')">US30</button>
         </div>
+        <input type="hidden" id="currencyPair" value="XAUUSD">
+
+        <label>Account Size ($)</label>
+        <input type="number" id="forexAccountSize" inputmode="decimal">
+
+        <label>Risk (%)</label>
+        <div class="row-group">
+            <button id="btnRisk1" class="choice-btn active" onclick="selectRisk(1)">1%</button>
+            <button id="btnRisk05" class="choice-btn" onclick="selectRisk(0.5)">0.5%</button>
+        </div>
+        <input type="hidden" id="forexRiskPercent" value="1">
+
+        <label>Entry Price</label>
+        <input type="number" id="forexEntryPrice" inputmode="decimal">
+
+        <label id="tpLabel" style="color:#28a745">TP (Pips)</label>
+        <input type="number" id="forexTpPips" inputmode="decimal">
+
+        <label id="slLabel" style="color:#dc3545">SL (Pips)</label>
+        <input type="number" id="forexStopPips" inputmode="decimal">
+
+        <div class="action-group">
+            <button class="action-btn btn-sell" onclick="calculateForex('short')">Sell</button>
+            <button class="action-btn btn-buy" onclick="calculateForex('long')">Buy</button>
+        </div>
+
+        <div id="output" class="result-card"></div>
     </div>
-    
+
     <script>
-        // --- Utility Functions ---
-        function getRandomInRange(min, max, decimals = 2) {
-            const factor = Math.pow(10, decimals);
-            return Math.round((Math.random() * (max - min) + min) * factor) / factor;
+        // --- Helper: Copy to Clipboard ---
+        function copyText(txt, btn) {
+            navigator.clipboard.writeText(txt);
+            let original = btn.innerHTML;
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="#28a745"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+            setTimeout(() => btn.innerHTML = original, 1500);
         }
 
-        // تابع کپی به‌روز شده
-        function copyValue(event, value) {
-            event.stopPropagation();
-            navigator.clipboard.writeText(value).then(() => {
-                const iconElement = event.currentTarget;
-                const originalInnerHTML = iconElement.innerHTML;
-                const originalFill = iconElement.style.fill;
-                
-                // Save original transform and filter style to restore them correctly
-                const originalTransform = iconElement.style.transform;
-                const originalFilter = iconElement.style.filter;
-                
-                // 1. نمایش پیام "کپی شد"
-                const message = document.createElement('div');
-                message.className = 'copy-message show';
-                message.textContent = 'Copied!'; // می توانید به 'کپی شد' تغییر دهید
-                iconElement.parentNode.appendChild(message);
-                
-                // 2. تغییر به آیکون تیک سبز
-                iconElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'; /* Checkmark SVG */
-                iconElement.style.fill = '#28a745'; /* Green checkmark */
-                iconElement.style.transform = 'scale(1.2)'; 
-                iconElement.style.filter = 'drop-shadow(0 0 5px rgba(40, 167, 69, 0.5))'; 
-
-                // 3. بازگشت به حالت اولیه بعد از 1.5 ثانیه
-                setTimeout(() => {
-                    // حذف پیام
-                    message.classList.remove('show');
-                    message.style.opacity = '0';
-                    setTimeout(() => {
-                         if (iconElement.parentNode.contains(message)) {
-                            iconElement.parentNode.removeChild(message);
-                         }
-                    }, 300); // 300ms transition time
-                    
-                    // بازگرداندن آیکون و استایل
-                    iconElement.innerHTML = originalInnerHTML;
-                    iconElement.style.fill = originalFill;
-                    iconElement.style.transform = originalTransform; 
-                    iconElement.style.filter = originalFilter;
-                }, 1500);
-                
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+        // --- Theme Manager ---
+        function setTheme(pair) {
+            const r = document.documentElement.style;
+            
+            if (pair === 'XAUUSD') {
+                // Gold Theme
+                r.setProperty('--theme-primary', '#FFD700');
+                r.setProperty('--theme-gradient', 'linear-gradient(135deg, #FFD700, #DAA520)');
+                r.setProperty('--table-header-bg', 'linear-gradient(45deg, #FFD700, #DAA520)');
+                r.setProperty('--table-header-text', '#000000');
+                r.setProperty('--active-btn-text', '#000000');
+                r.setProperty('--result-text', '#b8860b');
+                r.setProperty('--focus-glow', 'rgba(218, 165, 32, 0.35)');
+            } else { 
+                // US30 Blue Theme
+                r.setProperty('--theme-primary', '#0056b3');
+                r.setProperty('--theme-gradient', 'linear-gradient(135deg, #003366, #0056b3)');
+                r.setProperty('--table-header-bg', 'linear-gradient(45deg, #003366, #0056b3)');
+                r.setProperty('--table-header-text', '#ffffff');
+                r.setProperty('--active-btn-text', '#ffffff');
+                r.setProperty('--result-text', '#007bff');
+                r.setProperty('--focus-glow', 'rgba(0, 86, 179, 0.35)');
+            }
         }
 
-        // --- Currency Selection Logic ---
+        // --- Selection Logic ---
         function selectCurrency(pair) {
-            const buttons = document.querySelectorAll('.currency-button');
-            buttons.forEach(button => button.classList.remove('active'));
+            document.querySelectorAll('.currency-button, .choice-btn').forEach(b => {
+                if(b.id.includes('XAU') || b.id.includes('US30')) b.classList.remove('active');
+            });
             document.getElementById(`btn${pair}`).classList.add('active');
             document.getElementById('currencyPair').value = pair;
-            updateInputLabels(pair);
-        }
-
-        // --- Risk Selection Logic (New) ---
-        function selectRisk(percent) {
-            const buttons = document.querySelectorAll('.risk-button');
-            buttons.forEach(button => button.classList.remove('active'));
             
-            // Note: The ID logic uses 'btnRisk1' for 1% and 'btnRisk05' for 0.5%
-            const idSuffix = (percent === 1) ? '1' : '05'; 
-            document.getElementById(`btnRisk${idSuffix}`).classList.add('active');
-            document.getElementById('forexRiskPercent').value = percent;
+            const suffix = pair === 'US30' ? '(Points)' : '(Pips)';
+            document.getElementById('tpLabel').textContent = `TP ${suffix}`;
+            document.getElementById('slLabel').textContent = `SL ${suffix}`;
+            
+            setTheme(pair);
         }
 
+        function selectRisk(val) {
+            document.getElementById('btnRisk1').classList.remove('active');
+            document.getElementById('btnRisk05').classList.remove('active');
+            document.getElementById(val === 1 ? 'btnRisk1' : 'btnRisk05').classList.add('active');
+            document.getElementById('forexRiskPercent').value = val;
+        }
+
+        // --- Core Calculation with Test Mode ---
         function calculateForex(tradeType) {
-            document.getElementById("output").style.display = "flex";
-
+            const pair = document.getElementById('currencyPair').value;
             let accountSize = parseFloat(document.getElementById('forexAccountSize').value);
-            // Risk is now read from the hidden input, set by selectRisk function
-            let riskPercent = parseFloat(document.getElementById('forexRiskPercent').value); 
-            let currencyPair = document.getElementById('currencyPair').value;
+            const riskPercent = parseFloat(document.getElementById('forexRiskPercent').value);
             let entryPrice = parseFloat(document.getElementById('forexEntryPrice').value);
-            let inputStopLossValue = parseFloat(document.getElementById('forexStopPips').value);
-            let inputTakeProfitValue = parseFloat(document.getElementById('forexTpPips').value);
+            let slPips = parseFloat(document.getElementById('forexStopPips').value);
+            let tpPips = parseFloat(document.getElementById('forexTpPips').value);
+            
+            setTheme(pair); 
+            
+            const out = document.getElementById('output');
+            out.style.display = 'block';
 
-            // Default values if inputs are invalid
-            if (isNaN(accountSize) || accountSize <= 0) {
-                accountSize = getRandomInRange(1000, 10000, 2);
-                document.getElementById('forexAccountSize').value = accountSize;
+            // --- TEST MODE / AUTO-FILL LOGIC ---
+            const isGold = pair === 'XAUUSD';
+            const defaultEntry = isGold ? 2300.00 : 39000.00;
+            const defaultSL = isGold ? 40 : 50;
+            const defaultTP = isGold ? 80 : 100;
+            
+            if (!accountSize || accountSize <= 0) {
+                accountSize = 10000;
+                // Since the user removed the placeholder, we don't auto-fill unless they calculate
+                // document.getElementById('forexAccountSize').value = accountSize;
             }
-
-            if (isNaN(entryPrice) || entryPrice <= 0) {
-                const priceRanges = {
-                    'USDCAD': [1.30, 1.40, 5], 
-                    'USDJPY': [140, 160, 3], 
-                    'AUDUSD': [0.65, 0.75, 5],
-                    // تغییر: محدوده برای NZDUSD اضافه شد
-                    'NZDUSD': [0.60, 0.70, 5], 
-                };
-                const [min, max, decimals] = priceRanges[currencyPair] || [1, 2, 5];
-                entryPrice = getRandomInRange(min, max, decimals);
+            
+            if (!entryPrice || entryPrice <= 0) {
+                entryPrice = defaultEntry;
                 document.getElementById('forexEntryPrice').value = entryPrice;
             }
-            if (isNaN(inputStopLossValue) || inputStopLossValue <= 0) {
-                inputStopLossValue = getRandomInRange(10, 50, 1);
-                document.getElementById('forexStopPips').value = inputStopLossValue;
-            }
-            if (isNaN(inputTakeProfitValue) || inputTakeProfitValue <= 0) {
-                inputTakeProfitValue = getRandomInRange(50, 150, 1);
-                document.getElementById('forexTpPips').value = inputTakeProfitValue;
+            
+            if (!slPips || slPips <= 0) {
+                slPips = defaultSL;
+                document.getElementById('forexStopPips').value = slPips;
             }
 
+            if (!tpPips || tpPips <= 0) {
+                tpPips = defaultTP;
+                document.getElementById('forexTpPips').value = tpPips;
+            }
+            // --- END TEST MODE / AUTO-FILL LOGIC ---
+
+            const config = isGold 
+                ? { pipSize: 0.1, contractSize: 100, precision: 2 }
+                : { pipSize: 1.0, contractSize: 1, precision: 1 };
+
+            const valuePerPipPerLot = config.contractSize * config.pipSize;
             const riskAmount = accountSize * (riskPercent / 100);
-
-            let pricePrecision;
-            let stopLossPriceChangeInPriceUnits;
-            let takeProfitPriceChangeInPriceUnits;
-
-            const pairConfigs = {
-                'USDCAD': { 'pipSize': 0.0001, 'pricePrecision': 5 }, 
-                'USDJPY': { 'pipSize': 0.01, 'pricePrecision': 3 },
-                'AUDUSD': { 'pipSize': 0.0001, 'pricePrecision': 5 },
-                // تغییر: پیکربندی NZDUSD اضافه شد
-                'NZDUSD': { 'pipSize': 0.0001, 'pricePrecision': 5 },
-            };
-
-            const config = pairConfigs[currencyPair];
-
-            if (!config) {
-                document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">Selected currency pair (${currencyPair}) is not supported.</p>`;
-                return;
-            }
-
-            pricePrecision = config.pricePrecision;
-
-            stopLossPriceChangeInPriceUnits = inputStopLossValue * config.pipSize;
-            takeProfitPriceChangeInPriceUnits = inputTakeProfitValue * config.pipSize;
+            const lots = riskAmount / (slPips * valuePerPipPerLot);
             
-            const displayStopLossPrice = (tradeType === 'long') ? entryPrice - stopLossPriceChangeInPriceUnits : entryPrice + stopLossPriceChangeInPriceUnits;
-            const displayTakeProfitPrice = (tradeType === 'long') ? entryPrice + takeProfitPriceChangeInPriceUnits : entryPrice - takeProfitPriceChangeInPriceUnits;
+            const slDist = slPips * config.pipSize;
+            const tpDist = tpPips * config.pipSize;
 
-            // --- Validation Logic ---
-            if (tradeType === 'long') {
-                if (displayStopLossPrice >= entryPrice) {
-                    document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">For a **Buy (Long)** position, the Stop Loss price must be **lower** than the Entry Price.</p>`;
-                    return;
-                }
-                if (displayTakeProfitPrice <= entryPrice) {
-                    document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">For a **Buy (Long)** position, the Take Profit price must be **higher** than the Entry Price.</p>`;
-                    return;
-                }
-            } else { // Short position
-                if (displayStopLossPrice <= entryPrice) {
-                    document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">For a **Sell (Short)** position, the Stop Loss price must be **higher** than the Entry Price.</p>`;
-                    return;
-                }
-                if (displayTakeProfitPrice >= entryPrice) {
-                    document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">For a **Sell (Short)** position, the Take Profit price must be **lower** than the Entry Price.</p>`;
-                    return;
-                }
-            }
+            const slPrice = tradeType === 'long' ? entryPrice - slDist : entryPrice + slDist;
+            const tpPrice = tradeType === 'long' ? entryPrice + tpDist : entryPrice - tpDist;
             
-            // --- Position Size Calculation Logic ---
-            const quoteCurrency = currencyPair.substring(3);
-            const standardLotSize = 100000;
+            const profit = riskAmount * (tpPips / slPips);
+            const rr = (tpPips / slPips).toFixed(2);
+
+            const copyIcon = (val) => `<span class="copy-icon" onclick="copyText('${val}', this)"><svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span>`;
             
-            let valuePerPipOrPointPerLot; 
-            
-            // محاسبه Value Per Pip (این بخش برای NZDUSD نیازی به تغییر نداشت)
-            if (quoteCurrency === 'USD') {
-                // برای جفت‌هایی که USD ارز مظنه است (مانند NZDUSD و AUDUSD)، ارزش پیپ ثابت است.
-                valuePerPipOrPointPerLot = standardLotSize * config.pipSize; 
-            } else if (quoteCurrency === 'JPY') {
-                valuePerPipOrPointPerLot = (standardLotSize * config.pipSize) / entryPrice;
-            } else if (quoteCurrency === 'CAD') {
-                 const pipValueInQuote = standardLotSize * config.pipSize;
-                 valuePerPipOrPointPerLot = pipValueInQuote / entryPrice;
-            } else {
-                document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">Calculation for cross-currency pair ${currencyPair} is not fully supported.</p>`;
-                return;
-            }
+            const html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">${tradeType.toUpperCase()} POSITION DETAILS - ${pair.toUpperCase()}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Lot Size</td><td>${lots.toFixed(2)} ${copyIcon(lots.toFixed(2))}</td></tr>
+                    <tr><td>TP Price</td><td>${tpPrice.toFixed(config.precision)} ${copyIcon(tpPrice.toFixed(config.precision))}</td></tr>
+                    <tr><td>SL Price</td><td>${slPrice.toFixed(config.precision)} ${copyIcon(slPrice.toFixed(config.precision))}</td></tr>
+                    <tr><td>Profit</td><td class="profit-val">+$${profit.toFixed(2)}</td></tr>
+                    <tr><td>Loss</td><td class="loss-val">-$${riskAmount.toFixed(2)}</td></tr>
+                    <tr><td>Risk : Reward</td><td>1 : ${rr}</td></tr>
+                </tbody>
+            </table>`;
 
-            const effectiveStopLossDistance = inputStopLossValue;
-
-            const totalDollarRiskPerLotAtSL = effectiveStopLossDistance * valuePerPipOrPointPerLot;
-
-            if (totalDollarRiskPerLotAtSL === 0) {
-                document.getElementById("output").innerHTML = `<p style="color: #e05e5e;">Stop Loss value cannot be zero.</p>`;
-                return;
-            }
-
-            const positionSizeLots = riskAmount / totalDollarRiskPerLotAtSL;
-            const potentialLoss = riskAmount;
-            const potentialProfit = potentialLoss * (inputTakeProfitValue / effectiveStopLossDistance);
-            
-            const riskRewardRatio = (inputTakeProfitValue / effectiveStopLossDistance).toFixed(2);
-
-            let outputHtml = '<table>';
-            outputHtml += createCopyableTableRow('Position Size (Lot)', `${positionSizeLots.toFixed(2)}`, positionSizeLots.toFixed(2));
-            outputHtml += createCopyableTableRow(' TP ', `${displayTakeProfitPrice.toFixed(pricePrecision)}`, displayTakeProfitPrice.toFixed(pricePrecision)); 
-            outputHtml += createCopyableTableRow(' SL ', `${displayStopLossPrice.toFixed(pricePrecision)}`, displayStopLossPrice.toFixed(pricePrecision));
-            outputHtml += `<tr class="profit-row"><td> Profit ($)</td><td>+${potentialProfit.toFixed(2)}</td></tr>`;
-            outputHtml += `<tr class="loss-row"><td> Loss ($)</td><td>-${potentialLoss.toFixed(2)}</td></tr>`;
-            outputHtml += `<tr><td>Risk : Reward</td><td>1 : ${riskRewardRatio}</td></tr>`;
-            outputHtml += '</table>';
-
-            document.getElementById("output").innerHTML = outputHtml;
+            out.innerHTML = html;
+            out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        function createCopyableTableRow(label, displayValue, valueToCopy) {
-            // آیکون کپی در حال حاضر داخل یک <span> با کلاس copy-icon است.
-            return `<tr><td>${label}</td><td>${displayValue} <span class="copy-icon" onclick="copyValue(event, '${valueToCopy}')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></td></tr>`;
-        }
-
-        // --- Event Listeners and Initial Setup ---
-        function applyDeviceColorScheme() {
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            selectCurrency('XAUUSD'); // Default Gold
+            selectRisk(1);
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
             }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            applyDeviceColorScheme();
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyDeviceColorScheme);
-            
-            // Set initial active states for USDCAD and 1% Risk
-            selectCurrency('USDCAD');
-            selectRisk(1);
-
-            updateInputLabels(document.getElementById('currencyPair').value);
         });
-        
-        function updateInputLabels(currencyPair) {
-            const stopLossLabel = document.getElementById('stopLossLabel');
-            const takeProfitLabel = document.getElementById('takeProfitLabel');
-            
-            // Labels remain "Pips" for all supported pairs
-            stopLossLabel.textContent = 'SL (Pips)';
-            takeProfitLabel.textContent = 'TP (Pips)';
-        }
     </script>
 </body>
 </html>
