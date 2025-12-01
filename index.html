@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>GBPUSD & USDJPY Pro Calc</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>USDJPY Pro Calc</title> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     /* --- Global Variables --- */
     :root {
@@ -16,27 +15,21 @@
         --border-color: #dee2e6;
         --label-color: #606770;
         
-        /* Dynamic Theme Variables (Default: GBPUSD/Blue) */
-        --theme-primary: #0077B6; /* Default Blue for GBPUSD */
-        --theme-gradient: linear-gradient(135deg, #0077B6, #0096C7);
-        --table-header-bg: linear-gradient(45deg, #0077B6, #0096C7);
+        /* Dynamic Theme Variables (Default: USDJPY/Red) */
+        --theme-primary: #D00000; /* Default Red for USDJPY */
+        --theme-gradient: linear-gradient(135deg, #A80000, #D00000);
+        --table-header-bg: linear-gradient(45deg, #A80000, #D00000);
         --table-header-text: #ffffff;
         --active-btn-text: #ffffff;
-        --focus-glow: rgba(0, 119, 182, 0.35);
+        --focus-glow: rgba(208, 0, 0, 0.35); /* Focus for Red */
         
-        --result-bg: #f0f8ff;
-        --result-text: #0077B6; 
+        --result-bg: #fff0f0;
+        --result-text: #D00000; 
         
         --btn-buy-bg: linear-gradient(45deg, #28a745, #218838);
         --btn-sell-bg: linear-gradient(45deg, #dc3545, #c82333);
 
-        /* --- New Theme Variables for Currencies --- */
-        /* GBPUSD */
-        --gbpusd-primary: #0077B6; 
-        --gbpusd-gradient-light: linear-gradient(135deg, #0077B6, #0096C7);
-        --gbpusd-gradient-dark: linear-gradient(135deg, #023E8A, #0077B6);
-        
-        /* USDJPY */
+        /* --- Theme Variables for USDJPY --- */
         --usdjpy-primary-light: #D00000;
         --usdjpy-gradient-light: linear-gradient(135deg, #A80000, #D00000);
         --usdjpy-primary-dark: #B71C1C;
@@ -53,6 +46,13 @@
         --label-color: #b0b3b8;
         
         --result-bg: #2a2b2c;
+        --result-text: var(--usdjpy-primary-dark);
+        
+        /* Dark Mode Red Theme Update */
+        --theme-primary: var(--usdjpy-primary-dark);
+        --theme-gradient: var(--usdjpy-gradient-dark);
+        --table-header-bg: var(--usdjpy-gradient-dark);
+        --focus-glow: rgba(183, 28, 28, 0.35);
     }
 
     /* --- Reset & Layout --- */
@@ -149,6 +149,13 @@
         -moz-user-select: none;
         -ms-user-select: none;
     }
+    
+    /* Make single button fill the whole width */
+    #btnUSDJPY { 
+        flex: 1; 
+        width: 100%;
+    }
+
 
     .choice-btn:hover {
         background: var(--border-color);
@@ -171,18 +178,6 @@
         transform: translateY(0);
     }
 
-    /* Specific Active Colors Overrides */
-    
-    /* GBPUSD Theme (Blue/Slightly Darker Blue) */
-    #btnGBPUSD.active {
-        background: var(--theme-gradient); /* Controlled by setTheme */
-        color: #ffffff;
-        box-shadow: 
-            0 4px 12px -2px rgba(0, 119, 182, 0.4),
-            0 0 0 2px var(--theme-primary), 
-            inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-    }
-    
     /* USDJPY Theme (Light Mode - Red/Maroon for Japan) */
     #btnUSDJPY.active {
         background: var(--usdjpy-gradient-light); 
@@ -200,16 +195,6 @@
         box-shadow: 
             0 4px 12px -2px rgba(183, 28, 28, 0.4),
             0 0 0 2px var(--usdjpy-primary-dark), 
-            inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-    }
-    
-    /* Dark Mode specific for GBPUSD (Darker Blue) */
-    body.dark #btnGBPUSD.active {
-        background: var(--gbpusd-gradient-dark); /* Controlled by setTheme */
-        color: #ffffff;
-        box-shadow: 
-            0 4px 12px -2px rgba(2, 62, 138, 0.4),
-            0 0 0 2px var(--gbpusd-primary), 
             inset 0 0 0 1px rgba(255, 255, 255, 0.3);
     }
 
@@ -322,12 +307,11 @@
 <body>
 
     <div class="container">
-        <label></label>
+        <label>Currency Pair</label>
         <div class="row-group">
-            <button id="btnGBPUSD" class="choice-btn active" onclick="selectCurrency('GBPUSD')">GBPUSD</button>
-            <button id="btnUSDJPY" class="choice-btn" onclick="selectCurrency('USDJPY')">USDJPY</button>
+            <button id="btnUSDJPY" class="choice-btn active">USDJPY</button>
         </div>
-        <input type="hidden" id="currencyPair" value="GBPUSD">
+        <input type="hidden" id="currencyPair" value="USDJPY">
 
         <label>Account Size ($)</label>
         <input type="number" id="forexAccountSize" inputmode="decimal">
@@ -370,53 +354,22 @@
             const r = document.documentElement.style;
             const isDark = document.body.classList.contains('dark');
             
-            if (pair === 'GBPUSD') { 
-                // GBPUSD Theme (Blue/Dark Blue)
-                const gbpPrimary = r.getPropertyValue('--gbpusd-primary');
-                const gbpGradient = isDark ? r.getPropertyValue('--gbpusd-gradient-dark') : r.getPropertyValue('--gbpusd-gradient-light');
-
-                r.setProperty('--theme-primary', gbpPrimary);
-                r.setProperty('--theme-gradient', gbpGradient);
-                r.setProperty('--table-header-bg', gbpGradient);
-                r.setProperty('--table-header-text', '#ffffff');
-                r.setProperty('--active-btn-text', '#ffffff');
-                r.setProperty('--result-text', gbpPrimary);
-                r.setProperty('--focus-glow', 'rgba(0, 119, 182, 0.35)');
-
-            } else if (pair === 'USDJPY') {
-                // USDJPY Theme (Red/Crimson)
-                const jpyDarkPrimary = r.getPropertyValue('--usdjpy-primary-dark'); 
-                const jpyDarkGradient = r.getPropertyValue('--usdjpy-gradient-dark');
-                const jpyLightPrimary = r.getPropertyValue('--usdjpy-primary-light'); 
-                const jpyLightGradient = r.getPropertyValue('--usdjpy-gradient-light');
-                
-                r.setProperty('--theme-primary', isDark ? jpyDarkPrimary : jpyLightPrimary); 
-                r.setProperty('--theme-gradient', isDark ? jpyDarkGradient : jpyLightGradient);
-                r.setProperty('--table-header-bg', isDark ? jpyDarkGradient : jpyLightGradient);
-                r.setProperty('--table-header-text', '#ffffff');
-                r.setProperty('--active-btn-text', '#ffffff');
-                r.setProperty('--result-text', isDark ? jpyDarkPrimary : jpyLightPrimary); 
-                r.setProperty('--focus-glow', isDark ? 'rgba(183, 28, 28, 0.35)' : 'rgba(208, 0, 0, 0.35)');
-            }
+            // USDJPY Theme (Red/Crimson)
+            const jpyDarkPrimary = r.getPropertyValue('--usdjpy-primary-dark'); 
+            const jpyDarkGradient = r.getPropertyValue('--usdjpy-gradient-dark');
+            const jpyLightPrimary = r.getPropertyValue('--usdjpy-primary-light'); 
+            const jpyLightGradient = r.getPropertyValue('--usdjpy-gradient-light');
+            
+            r.setProperty('--theme-primary', isDark ? jpyDarkPrimary : jpyLightPrimary); 
+            r.setProperty('--theme-gradient', isDark ? jpyDarkGradient : jpyLightGradient);
+            r.setProperty('--table-header-bg', isDark ? jpyDarkGradient : jpyLightGradient);
+            r.setProperty('--table-header-text', '#ffffff');
+            r.setProperty('--active-btn-text', '#ffffff');
+            r.setProperty('--result-text', isDark ? jpyDarkPrimary : jpyLightPrimary); 
+            r.setProperty('--focus-glow', isDark ? 'rgba(183, 28, 28, 0.35)' : 'rgba(208, 0, 0, 0.35)');
         }
 
         // --- Selection Logic ---
-        function selectCurrency(pair) {
-            document.querySelectorAll('.choice-btn').forEach(b => {
-                if(b.id === 'btnGBPUSD' || b.id === 'btnUSDJPY') {
-                    b.classList.remove('active');
-                }
-            });
-            document.getElementById(`btn${pair}`).classList.add('active');
-            document.getElementById('currencyPair').value = pair;
-            
-            const suffix = '(Pips)'; 
-            document.getElementById('tpLabel').textContent = `TP ${suffix}`;
-            document.getElementById('slLabel').textContent = `SL ${suffix}`;
-            
-            setTheme(pair);
-        }
-
         function selectRisk(val) {
             document.getElementById('btnRisk1').classList.remove('active');
             document.getElementById('btnRisk05').classList.remove('active');
@@ -426,7 +379,7 @@
 
         // --- Core Calculation ---
         function calculateForex(tradeType) {
-            const pair = document.getElementById('currencyPair').value;
+            const pair = 'USDJPY'; // Hardcoded to USDJPY
             let accountSize = parseFloat(document.getElementById('forexAccountSize').value);
             const riskPercent = parseFloat(document.getElementById('forexRiskPercent').value);
             let entryPrice = parseFloat(document.getElementById('forexEntryPrice').value);
@@ -439,42 +392,16 @@
             out.style.display = 'block';
 
             // --- Configuration and Auto-Fill Defaults ---
-            const isGBPUSD = pair === 'GBPUSD';
             
-            let defaultEntry, defaultSL, defaultTP, config;
-
-            if (isGBPUSD) {
-                // GBPUSD Configuration (Standard Major Pair)
-                defaultEntry = 1.25000;
-                defaultSL = 40;       // 40 pips = 0.0040 move
-                defaultTP = 80;       // 80 pips = 0.0080 move
-                config = { 
-                    pipSize: 0.0001,        // Price unit per pip (1/10000)
-                    contractSize: 100000,   // Standard lot size 
-                    precision: 5          // Display precision for price (4 decimals + pipet)
-                };
-            } else if (pair === 'USDJPY') {
-                // USDJPY Configuration (Yen Pair)
-                defaultEntry = 155.000;
-                defaultSL = 20;       // 20 pips = 0.20 move
-                defaultTP = 40;       // 40 pips = 0.40 move
-                config = { 
-                    pipSize: 0.01,        // Price unit per pip (1 cent / 1 JPY)
-                    contractSize: 100000, // Standard lot size 
-                    precision: 3          // Display precision for price
-                }; 
-            } else {
-                // Fallback (e.g., if XAUUSD somehow remains)
-                defaultEntry = 2300.00;
-                defaultSL = 40; 
-                defaultTP = 80;
-                config = { 
-                    pipSize: 0.1,         
-                    contractSize: 100,    
-                    precision: 2          
-                };
-            }
-
+            let defaultEntry = 155.000;
+            let defaultSL = 20;       // 20 pips = 0.20 move
+            let defaultTP = 40;       // 40 pips = 0.40 move
+            const config = { 
+                pipSize: 0.01,        // Price unit per pip (1 cent / 1 JPY)
+                contractSize: 100000, // Standard lot size 
+                precision: 3          // Display precision for price
+            }; 
+            
             // Auto-fill logic
             if (!accountSize || accountSize <= 0) { accountSize = 10000; }
             if (!entryPrice || entryPrice <= 0) { entryPrice = defaultEntry; document.getElementById('forexEntryPrice').value = entryPrice; }
@@ -486,27 +413,15 @@
             const riskAmount = accountSize * (riskPercent / 100);
             let finalValuePerPipPerLot;
 
-            if (pair === 'USDJPY') {
-                // Pip Value in USD = (Pip Size * Contract Size) / Entry Price
-                finalValuePerPipPerLot = (config.contractSize * config.pipSize) / entryPrice; 
-            } else {
-                // GBPUSD and other base currency pairs (Pip Value in USD = Pip Size * Contract Size)
-                finalValuePerPipPerLot = config.contractSize * config.pipSize; 
-            }
+            // Pip Value in USD = (Pip Size * Contract Size) / Entry Price
+            finalValuePerPipPerLot = (config.contractSize * config.pipSize) / entryPrice; 
             
             // Lot Size = Risk Amount / (SL Pips * Pip Value per Lot in USD)
             const lots = riskAmount / (slPips * finalValuePerPipPerLot);
             
             // --- Price & R:R Calculation ---
             
-            let priceUnitPerPip;
-            if (pair === 'USDJPY') {
-                priceUnitPerPip = 0.01;
-            } else if (pair === 'GBPUSD') {
-                priceUnitPerPip = 0.0001;
-            } else {
-                priceUnitPerPip = 0.1; // Fallback
-            }
+            const priceUnitPerPip = 0.01; // USDJPY
             
             const slDist = slPips * priceUnitPerPip;
             const tpDist = tpPips * priceUnitPerPip;
@@ -523,7 +438,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th colspan="2">${tradeType.toUpperCase()} POSITION  ${pair.toUpperCase()}</th>
+                        <th colspan="2">${tradeType.toUpperCase()} POSITION  USDJPY</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -542,12 +457,20 @@
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
-            selectCurrency('GBPUSD'); // Default GBPUSD
+            document.getElementById('btnUSDJPY').classList.add('active'); // Ensure USDJPY is active
+            document.getElementById('currencyPair').value = 'USDJPY';
+            
             selectRisk(1);
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.body.classList.add('dark');
-                setTheme('GBPUSD'); // Apply dark theme initially
+                setTheme('USDJPY'); // Apply dark theme initially for USDJPY
+            } else {
+                setTheme('USDJPY'); // Apply light theme initially for USDJPY
             }
+            
+            const suffix = '(Pips)'; 
+            document.getElementById('tpLabel').textContent = `TP ${suffix}`;
+            document.getElementById('slLabel').textContent = `SL ${suffix}`;
         });
     </script>
 </body>
