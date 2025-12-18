@@ -3,514 +3,374 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>USDJPY Pro Calc</title> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    /* --- Global Variables --- */
-    :root {
-        /* Layout & Basics */
-        --bg-color: #f0f2f5;
-        --card-bg: #ffffff;
-        --text-color: #1c1e21;
-        --input-bg: #f8f9fa;
-        --border-color: #dee2e6;
-        --label-color: #606770;
-        
-        /* Dynamic Theme Variables (Minimal Classic Blue) */
-        --theme-primary: #007BFF; /* Classic Blue Primary */
-        --theme-gradient: linear-gradient(135deg, #0066D8, #007BFF); /* Classic Blue Gradient */
-        --table-header-bg: linear-gradient(45deg, #0066D8, #007BFF);
-        --table-header-text: #ffffff;
-        --active-btn-text: #ffffff;
-        --focus-glow: rgba(0, 123, 255, 0.35); /* Blue Focus Glow */
-        
-        --result-bg: #f0f7ff; /* Very light blue background */
-        --result-text: #0066D8; /* Darker Blue for Result Text */
-        
-        --btn-buy-bg: linear-gradient(45deg, #28a745, #218838); /* Green (Buy) - Unchanged */
-        --btn-sell-bg: linear-gradient(45deg, #dc3545, #c82333); /* Red (Sell) - Unchanged */
-
-        /* --- Theme Variables for USDJPY (Now using Minimal Classic Blue) --- */
-        --usdjpy-primary-light: #007BFF;
-        --usdjpy-gradient-light: linear-gradient(135deg, #0066D8, #007BFF);
-        --usdjpy-primary-dark: #0056B3;
-        --usdjpy-gradient-dark: linear-gradient(135deg, #004C99, #0056B3);
-    }
-
-    /* Dark Mode */
-    body.dark {
-        --bg-color: #18191a;
-        --card-bg: #242526;
-        --text-color: #e4e6eb;
-        --input-bg: #3a3b3c;
-        --border-color: #3e4042;
-        --label-color: #b0b3b8;
-        
-        --result-bg: #2a2b2c;
-        --result-text: var(--usdjpy-primary-dark);
-        
-        /* Dark Mode Blue Theme Update */
-        --theme-primary: var(--usdjpy-primary-dark);
-        --theme-gradient: var(--usdjpy-gradient-dark);
-        --table-header-bg: var(--usdjpy-gradient-dark);
-        --focus-glow: rgba(0, 86, 179, 0.35); /* Darker Blue glow */
-    }
-
-    /* --- Reset & Layout --- */
-    * { box-sizing: border-box; outline: none; }
-
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: var(--bg-color);
-        background-image:
-            linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0) 60%),
-            repeating-linear-gradient(135deg, rgba(255,255,255,0.18) 0 1px, transparent 1px 8px);
-        background-blend-mode: overlay, normal;
-        background-attachment: fixed;
-        color: var(--text-color);
-        margin: 0;
-        min-height: 100vh;
-        display: flex; 
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        transition: background 0.3s ease;
-    }
-
-    .container {
-        background: var(--card-bg);
-        width: 100%;
-        max-width: 500px;
-        padding: 35px 30px;
-        border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-    }
-
-    /* --- Inputs (Spinner Removed) --- */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    input[type="number"] {
-        width: 100%;
-        padding: 15px;
-        font-size: 16px;
-        border-radius: 12px;
-        border: 1.5px solid var(--border-color);
-        background: var(--input-bg);
-        color: var(--text-color);
-        font-weight: 500;
-        transition: all 0.2s;
-        display: block;
-    }
-
-    input[type="number"]:focus {
-        border-color: var(--theme-primary);
-        box-shadow: 0 0 0 4px var(--focus-glow);
-    }
-
-    label {
-        display: block;
-        margin: 18px 0 8px;
-        font-weight: 600;
-        font-size: 15px;
-        color: var(--label-color);
-        text-align: left;
-    }
-
-    /* --- Selection Buttons --- */
-    .row-group {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 12px; /* Increased margin for two rows (2x2 layout) */
-        flex-wrap: wrap; 
-    }
-    
-    /* Target only the last row-group (for risk buttons) to remove bottom margin */
-    .container > label:last-of-type + .row-group:last-of-type {
-        margin-bottom: 5px; 
-    }
-
-
-    .choice-btn {
-        flex: 1;
-        padding: 14px;
-        font-size: 15px;
-        font-weight: 600;
-        border-radius: 12px;
-        border: 1.5px solid var(--border-color);
-        background: var(--input-bg);
-        color: var(--label-color);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        /* Mobile Fixes */
-        -webkit-tap-highlight-color: transparent;
-        user-select: none; 
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        /* Set base width for 2 buttons per row (2x2 layout) */
-        min-width: calc(50% - 6px); 
-    }
-    
-    /* Make single button fill the whole width */
-    #btnUSDJPY { 
-        flex: 1; 
-        width: 100%;
-        min-width: unset; 
-    }
-
-
-    .choice-btn:hover {
-        background: var(--border-color);
-    }
-
-    /* Active States - Now Minimal Classic Blue */
-    .choice-btn.active {
-        background: var(--theme-gradient);
-        color: var(--active-btn-text);
-        border: none;
-        box-shadow: 
-            0 4px 12px -2px var(--focus-glow), 
-            0 0 0 2px var(--theme-primary),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-        transform: translateY(-1px);
-    }
-    
-    .choice-btn:active:not(.active) {
-        box-shadow: 0 0 0 2px var(--theme-primary); 
-        transform: translateY(0);
-    }
-
-    /* USDJPY Theme (Light Mode - Now Minimal Classic Blue) */
-    #btnUSDJPY.active {
-        background: var(--usdjpy-gradient-light); 
-        color: #ffffff;
-        box-shadow: 
-            0 4px 12px -2px rgba(0, 123, 255, 0.4), /* Blue Glow */
-            0 0 0 2px var(--usdjpy-primary-light), 
-            inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-    }
-
-    /* Dark Mode specific for USDJPY (Now Minimal Dark Blue) */
-    body.dark #btnUSDJPY.active {
-        background: var(--usdjpy-gradient-dark);
-        color: #ffffff;
-        box-shadow: 
-            0 4px 12px -2px rgba(0, 86, 179, 0.4), /* Dark Blue Glow */
-            0 0 0 2px var(--usdjpy-primary-dark), 
-            inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-    }
-
-
-    /* --- Action Buttons --- */
-    .action-group {
-        display: flex;
-        gap: 15px;
-        margin-top: 30px;
-    }
-
-    .action-btn {
-        flex: 1;
-        padding: 16px;
-        font-size: 17px;
-        font-weight: 700;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        -webkit-tap-highlight-color: transparent;
-        user-select: none;
-        -webkit-user-select: none;
-    }
-
-    .btn-buy { background: var(--btn-buy-bg); }
-    .btn-sell { background: var(--btn-sell-bg); }
-
-    .action-btn:active { 
-        transform: scale(0.98); 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2), 0 0 0 2px rgba(255,255,255,0.1);
-    }
-    .action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    /* --- Result Area & Table --- */
-    .result-card {
-        width: 100%; 
-        margin-top: 30px;
-        background: var(--result-bg);
-        padding: 0;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(0,0,0,0.05);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        display: none; 
-        animation: fadeIn 0.3s ease-out;
-    }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    table { width: 100%; border-collapse: collapse; }
-    
-    /* Dynamic Header Style - Now Blue */
-    th {
-        background: var(--table-header-bg); 
-        color: var(--table-header-text); 
-        padding: 15px;
-        text-align: left;
-        font-weight: 700; 
-        font-size: 16px;
-    }
-
-    td {
-        padding: 14px 15px;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        color: var(--text-color);
-        font-weight: 500;
-        font-size: 16px;
-    }
-    
-    tr:last-child td { border-bottom: none; }
-    
-    td:last-child { 
-        text-align: right; 
-        font-weight: 700; 
-        color: var(--result-text); 
-        white-space: nowrap; 
-    }
-
-    .profit-val { color: #28a745 !important; }
-    .loss-val { color: #dc3545 !important; }
-
-    /* --- Copy Icon --- */
-    .copy-icon {
-        width: 18px; height: 18px;
-        cursor: pointer;
-        fill: var(--label-color); 
-        transition: fill 0.2s;
-        fill: var(--theme-primary); /* Changed copy icon color to theme primary */
-        vertical-align: middle;
-        margin-left: 8px;
-        display: inline-block;
-    }
-    .copy-icon:hover { fill: var(--theme-primary); transform: scale(1.1); }
-
-    /* --- Mobile Optimization --- */
-    @media (max-width: 600px) {
-        body { padding: 10px; align-items: flex-start; }
-        .container {
-            padding: 20px 15px;
-            margin-top: 10px;
+    <title>USDJPY Professional Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --accent-primary: #4f46e5;
+            --accent-secondary: #7c3aed;
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --input-bg: #f8fafc;
+            --border: #e2e8f0;
+            --buy-color: #059669;
+            --sell-color: #dc2626;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-glow: 0 10px 15px -3px rgba(79, 70, 229, 0.15);
         }
-        /* Ensure 2 buttons per row on all mobile sizes */
-        .choice-btn {
-            min-width: calc(50% - 6px);
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #020617;
+                --card-bg: rgba(15, 23, 42, 0.9);
+                --text-main: #f8fafc;
+                --text-dim: #94a3b8;
+                --input-bg: rgba(30, 41, 59, 0.6);
+                --border: rgba(51, 65, 85, 0.5);
+            }
         }
-    }
-</style>
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm), var(--shadow-glow);
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0 0 24px 0;
+            text-align: center;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin: 8px 0 8px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .full-width { grid-column: span 2; }
+
+        .input-box, .pill-container {
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .input-box:focus-within, .pill-container.active-focus {
+            border-color: var(--accent-primary);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-box label, .pill-container label { 
+            display: block; 
+            font-size: 0.85rem; 
+            color: var(--text-dim); 
+            margin-bottom: 6px; 
+            font-weight: 800; 
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        .input-box input { width: 100%; border: none; background: transparent; color: var(--text-main); font-size: 1.15rem; font-weight: 700; outline: none; }
+
+        .pill-group { display: flex; gap: 6px; }
+
+        .pill {
+            flex: 1;
+            border: none;
+            background: rgba(0,0,0,0.03);
+            padding: 10px 2px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pill.active { background: var(--accent-primary); color: #fff; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25); }
+
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-primary); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        .atr-disabled { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
+
+        .action-area { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+        .btn { padding: 20px; border: none; border-radius: var(--radius-md); font-size: 1.1rem; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .btn:active { transform: scale(0.96); }
+        .btn-sell { background: var(--sell-color); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.2); }
+        .btn-buy { background: var(--buy-color); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.2); }
+
+        .result-card {
+            margin-top: 24px; background: #0f172a; border-radius: var(--radius-md);
+            padding: 22px; color: #f8fafc; display: none; border: 1px solid rgba(255,255,255,0.08);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        
+        .main-lot { 
+            grid-column: span 2; 
+            background: rgba(99, 102, 241, 0.15); 
+            padding: 20px 10px; 
+            border-radius: 16px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.3); 
+        }
+        .main-lot label {
+            font-size: 0.85rem; 
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .main-lot div { 
+            font-size: 2.1rem; /* سایز به 2.1 تغییر کرد */
+            font-weight: 800; 
+            color: #818cf8; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 100%;
+            padding-left: 36px; /* برای حفظ وسط‌چین بودن دقیق عدد نسبت به لیبل */
+            gap: 10px;
+        }
+        
+        .res-item label { font-size: 0.8rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; display: block; text-transform: uppercase;}
+        .res-item div { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .rr-badge { grid-column: span 2; text-align: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 1rem; border: 1px dashed #334155; color: #e2e8f0; }
+
+        .copy-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 8px; padding: 6px; cursor: pointer; color: white; transition: 0.2s; }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn svg { width: 14px; height: 14px; fill: currentColor; }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <label>Currency Pair</label>
-        <div class="row-group">
-            <button id="btnUSDJPY" class="choice-btn active">USDJPY</button>
-        </div>
-        <input type="hidden" id="currencyPair" value="USDJPY">
+    <div class="app-container">
+        <form id="calcForm" autocomplete="off">
+            <div class="header"><h1>USDJPY</h1></div>
 
-        <label>Account Size ($)</label>
-        <input type="number" id="forexAccountSize" inputmode="decimal">
+            <div class="bento-grid">
+                <div class="input-box full-width" onclick="this.querySelector('input').focus()">
+                    <label>Account Size ($)</label>
+                    <input type="number" id="accSize">
+                </div>
 
-        <label>Risk (%)</label>
-        
-        <div class="row-group">
-            <button id="btnRisk025" class="choice-btn" onclick="selectRisk(0.25)">0.25%</button>
-            <button id="btnRisk05" class="choice-btn" onclick="selectRisk(0.5)">0.5%</button>
-        </div>
+                <div class="pill-container full-width active-focus" id="riskGroup" onclick="toggleFocus(this)">
+                    <label>Risk (%)</label>
+                    <div class="pill-group">
+                        <button type="button" class="pill active" onclick="setRisk(0.5, this)">0.50%</button>
+                        <button type="button" class="pill" onclick="setRisk(0.75, this)">0.75%</button>
+                        <button type="button" class="pill" onclick="setRisk(1, this)">1.00%</button>
+                    </div>
+                    <input type="hidden" id="riskVal" value="0.5">
+                </div>
 
-        <div class="row-group">
-            <button id="btnRisk075" class="choice-btn" onclick="selectRisk(0.75)">0.75%</button>
-            <button id="btnRisk1" class="choice-btn active" onclick="selectRisk(1)">1%</button>
-        </div>
-        
-        <input type="hidden" id="forexRiskPercent" value="1">
+                <div class="input-box full-width" onclick="this.querySelector('input').focus()">
+                    <label>Entry Price </label>
+                    <input type="number" id="entry" step="0.001">
+                </div>
 
-        <label>Entry Price</label>
-        <input type="number" id="forexEntryPrice" inputmode="decimal">
+                <div class="full-width">
+                    <span class="section-label">
+                        ATR  OFF / ON
+                        <label class="switch">
+                            <input type="checkbox" id="atrToggle" checked onchange="toggleATR()">
+                            <span class="slider"></span>
+                        </label>
+                    </span>
+                </div>
 
-        <label id="tpLabel" style="color:#28a745">TP (Pips)</label>
-        <input type="number" id="forexTpPips" inputmode="decimal">
+                <div class="bento-grid full-width" id="atrBox">
+                    <div class="input-box" onclick="this.querySelector('input').focus()">
+                        <label> ATR  Price</label>
+                        <input type="number" id="atrInput" step="0.001">
+                    </div>
+                    <div class="pill-container active-focus" id="multGroup" onclick="toggleFocus(this)">
+                        <label>Multiplier</label>
+                        <div class="pill-group">
+                            <button type="button" class="pill" onclick="setMult(2.0, this)">2.0x</button>
+                            <button type="button" class="pill active" onclick="setMult(2.5, this)">2.5x</button>
+                        </div>
+                    </div>
+                </div>
 
-        <label id="slLabel" style="color:#dc3545">SL (Pips)</label>
-        <input type="number" id="forexStopPips" inputmode="decimal">
+                <div class="input-box" onclick="this.querySelector('input').focus()">
+                    <label>TP</label>
+                    <input type="number" id="tpPips">
+                </div>
+                <div class="input-box" id="slManualBox" onclick="this.querySelector('input').focus()">
+                    <label>SL</label>
+                    <input type="number" id="slPips">
+                </div>
+                
+                <input type="hidden" id="multVal" value="2.5">
+            </div>
 
-        <div class="action-group">
-            <button class="action-btn btn-sell" onclick="calculateForex('short')">Sell</button>
-            <button class="action-btn btn-buy" onclick="calculateForex('long')">Buy</button>
-        </div>
+            <div class="action-area">
+                <button type="button" class="btn btn-sell" onclick="runCalc('short')">Sell / Short</button>
+                <button type="button" class="btn btn-buy" onclick="runCalc('long')">Buy / Long</button>
+            </div>
+        </form>
 
-        <div id="output" class="result-card"></div>
+        <div id="resBox" class="result-card"></div>
     </div>
 
     <script>
-        // --- Helper: Copy to Clipboard ---
-        function copyText(txt, btn) {
-            navigator.clipboard.writeText(txt);
-            let original = btn.innerHTML;
-            btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="#28a745"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
-            setTimeout(() => btn.innerHTML = original, 1500);
+        window.onload = () => {
+            document.getElementById('calcForm').reset();
+            document.getElementById('resBox').style.display = 'none';
+        };
+
+        function toggleFocus(el) {
+            el.classList.add('active-focus');
         }
 
-        // --- Theme Manager ---
-        function setTheme(pair) {
-            const r = document.documentElement.style;
-            const isDark = document.body.classList.contains('dark');
-            
-            // USDJPY Theme (Now Minimal Classic Blue)
-            const jpyDarkPrimary = r.getPropertyValue('--usdjpy-primary-dark'); 
-            const jpyDarkGradient = r.getPropertyValue('--usdjpy-gradient-dark');
-            const jpyLightPrimary = r.getPropertyValue('--usdjpy-primary-light'); 
-            const jpyLightGradient = r.getPropertyValue('--usdjpy-gradient-light');
-            
-            r.setProperty('--theme-primary', isDark ? jpyDarkPrimary : jpyLightPrimary); 
-            r.setProperty('--theme-gradient', isDark ? jpyDarkGradient : jpyLightGradient);
-            r.setProperty('--table-header-bg', isDark ? jpyDarkGradient : jpyLightGradient);
-            r.setProperty('--table-header-text', '#ffffff');
-            r.setProperty('--active-btn-text', '#ffffff');
-            r.setProperty('--result-text', isDark ? jpyDarkPrimary : jpyLightPrimary); 
+        function setRisk(v, b) {
+            event.stopPropagation();
+            b.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('riskVal').value = v;
         }
 
-        // --- Selection Logic ---
-        function selectRisk(val) {
-            // Deselect all risk buttons
-            document.getElementById('btnRisk1').classList.remove('active');
-            document.getElementById('btnRisk05').classList.remove('active');
-            document.getElementById('btnRisk025').classList.remove('active');
-            document.getElementById('btnRisk075').classList.remove('active');
-            
-            // Select the appropriate button based on the value
-            let btnId = '';
-            if (val === 1) {
-                btnId = 'btnRisk1';
-            } else if (val === 0.75) {
-                btnId = 'btnRisk075';
-            } else if (val === 0.5) {
-                btnId = 'btnRisk05';
-            } else if (val === 0.25) {
-                btnId = 'btnRisk025';
-            }
-
-            if (btnId) {
-                document.getElementById(btnId).classList.add('active');
-                document.getElementById('forexRiskPercent').value = val;
-            }
+        function setMult(v, b) {
+            event.stopPropagation();
+            b.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('multVal').value = v;
         }
 
-        // --- Core Calculation ---
-        function calculateForex(tradeType) {
-            const pair = 'USDJPY'; // Hardcoded to USDJPY
-            let accountSize = parseFloat(document.getElementById('forexAccountSize').value);
-            const riskPercent = parseFloat(document.getElementById('forexRiskPercent').value);
-            let entryPrice = parseFloat(document.getElementById('forexEntryPrice').value);
-            let slPips = parseFloat(document.getElementById('forexStopPips').value);
-            let tpPips = parseFloat(document.getElementById('forexTpPips').value);
-            
-            setTheme(pair); 
-            
-            const out = document.getElementById('output');
-            out.style.display = 'block';
-
-            // --- Configuration and Auto-Fill Defaults ---
-            
-            let defaultEntry = 155.000;
-            let defaultSL = 20;       // 20 pips = 0.20 move
-            let defaultTP = 40;       // 40 pips = 0.40 move
-            const config = { 
-                pipSize: 0.01,        // Price unit per pip (1 cent / 1 JPY)
-                contractSize: 100000, // Standard lot size 
-                precision: 3          // Display precision for price
-            }; 
-            
-            // Auto-fill logic
-            if (!accountSize || accountSize <= 0) { accountSize = 10000; }
-            if (!entryPrice || entryPrice <= 0) { entryPrice = defaultEntry; document.getElementById('forexEntryPrice').value = entryPrice; }
-            if (!slPips || slPips <= 0) { slPips = defaultSL; document.getElementById('forexStopPips').value = slPips; }
-            if (!tpPips || tpPips <= 0) { tpPips = defaultTP; document.getElementById('forexTpPips').value = tpPips; }
-            
-            
-            // --- Lot Size Calculation ---
-            const riskAmount = accountSize * (riskPercent / 100);
-            let finalValuePerPipPerLot;
-
-            // Pip Value in USD = (Pip Size * Contract Size) / Entry Price
-            finalValuePerPipPerLot = (config.contractSize * config.pipSize) / entryPrice; 
-            
-            // Lot Size = Risk Amount / (SL Pips * Pip Value per Lot in USD)
-            const lots = riskAmount / (slPips * finalValuePerPipPerLot);
-            
-            // --- Price & R:R Calculation ---
-            
-            const priceUnitPerPip = 0.01; // USDJPY
-            
-            const slDist = slPips * priceUnitPerPip;
-            const tpDist = tpPips * priceUnitPerPip;
-
-            const slPrice = tradeType === 'long' ? entryPrice - slDist : entryPrice + slDist;
-            const tpPrice = tradeType === 'long' ? entryPrice + tpDist : entryPrice - tpDist;
-            
-            const profit = riskAmount * (tpPips / slPips);
-            const rr = (tpPips / slPips).toFixed(2);
-
-            const copyIcon = (val) => `<span class="copy-icon" onclick="copyText('${val}', this)"><svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span>`;
-            
-            const html = `
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="2">${tradeType.toUpperCase()} POSITION  USDJPY</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Lot Size</td><td>${lots.toFixed(2)} ${copyIcon(lots.toFixed(2))}</td></tr>
-                    <tr><td>TP </td><td>${tpPrice.toFixed(config.precision)} ${copyIcon(tpPrice.toFixed(config.precision))}</td></tr>
-                    <tr><td>SL </td><td>${slPrice.toFixed(config.precision)} ${copyIcon(slPrice.toFixed(config.precision))}</td></tr>
-                    <tr><td>Profit</td><td class="profit-val">+$${profit.toFixed(2)}</td></tr>
-                    <tr><td>Loss</td><td class="loss-val">-$${riskAmount.toFixed(2)}</td></tr>
-                    <tr><td>Risk : Reward</td><td>1 : ${rr}</td></tr>
-                </tbody>
-            </table>`;
-
-            out.innerHTML = html;
-            out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        function toggleATR() {
+            const active = document.getElementById('atrToggle').checked;
+            document.getElementById('atrBox').classList.toggle('atr-disabled', !active);
         }
 
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('btnUSDJPY').classList.add('active'); // Ensure USDJPY is active
-            document.getElementById('currencyPair').value = 'USDJPY';
+        async function copy(t, b) {
+            await navigator.clipboard.writeText(t);
+            const old = b.innerHTML;
+            b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+            setTimeout(() => b.innerHTML = old, 1000);
+        }
+
+        function runCalc(type) {
+            const getVal = (id, min, max) => {
+                const el = document.getElementById(id);
+                if (el.value === "" || isNaN(parseFloat(el.value))) {
+                    return (Math.random() * (max - min) + min);
+                }
+                return parseFloat(el.value);
+            };
+
+            const acc = getVal('accSize', 5000, 20000);
+            const riskP = parseFloat(document.getElementById('riskVal').value);
+            const entP = getVal('entry', 150.000, 155.000);
+            const useATR = document.getElementById('atrToggle').checked;
             
-            selectRisk(1); 
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.body.classList.add('dark');
-                setTheme('USDJPY'); 
+            let stopPips;
+            if(useATR) {
+                const av = getVal('atrInput', 0.300, 0.500);
+                const m = parseFloat(document.getElementById('multVal').value);
+                stopPips = (av * m) / 0.01;
             } else {
-                setTheme('USDJPY'); 
+                stopPips = getVal('slPips', 15, 30);
             }
+
+            const takePips = getVal('tpPips', stopPips * 1.5, stopPips * 3);
             
-            const suffix = '(Pips)'; 
-            document.getElementById('tpLabel').textContent = `TP ${suffix}`;
-            document.getElementById('slLabel').textContent = `SL ${suffix}`;
-        });
+            const riskUSD = acc * (riskP / 100);
+            const pipVal = (100000 * 0.01) / entP;
+            const lots = riskUSD / (stopPips * pipVal);
+            
+            const slPrice = type === 'long' ? entP - (stopPips * 0.01) : entP + (stopPips * 0.01);
+            const tpPrice = type === 'long' ? entP + (takePips * 0.01) : entP - (takePips * 0.01);
+            const profit = riskUSD * (takePips / stopPips);
+            const rr = (takePips / stopPips).toFixed(2);
+
+            const out = document.getElementById('resBox');
+            out.style.display = 'block';
+            const ico = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+
+            out.innerHTML = `
+                <div class="res-grid">
+                    <div class="main-lot">
+                        <label>Position Size</label>
+                        <div>${lots.toFixed(2)} <button class="copy-btn" onclick="copy('${lots.toFixed(2)}', this)\">${ico}</button></div>
+                    </div>
+                    <div class="res-item">
+                        <label>TP</label>
+                        <div>${tpPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${tpPrice.toFixed(3)}', this)\">${ico}</button></div>
+                    </div>
+                    <div class="res-item">
+                        <label>SL</label>
+                        <div>${slPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${slPrice.toFixed(3)}', this)\">${ico}</button></div>
+                    </div>
+                    <div class="res-item"><label>Profit</label><div style="color:#10b981">+$${profit.toFixed(2)}</div></div>
+                    <div class="res-item"><label>Loss</label><div style="color:#f43f5e">-$${riskUSD.toFixed(2)}</div></div>
+                    <div class="rr-badge">Risk : Reward  &nbsp; <b>1 : ${rr}</b></div>
+                </div>
+            `;
+            out.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
     </script>
 </body>
 </html>
