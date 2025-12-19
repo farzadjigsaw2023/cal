@@ -3,20 +3,35 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>USDJPY Advanced Calc</title>
+    <title>USDJPY Professional Calculator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-primary: #6366f1;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --input-bg: #0f172a;
-            --border: #334155;
-            --buy-color: #10b981;
-            --sell-color: #f43f5e;
-            --radius: 16px;
+            --bg-color: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --accent-primary: #4f46e5;
+            --accent-secondary: #7c3aed;
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --input-bg: #f8fafc;
+            --border: #e2e8f0;
+            --buy-color: #059669;
+            --sell-color: #dc2626;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-glow: 0 10px 15px -3px rgba(79, 70, 229, 0.15);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #020617;
+                --card-bg: rgba(15, 23, 42, 0.9);
+                --text-main: #f8fafc;
+                --text-dim: #94a3b8;
+                --input-bg: rgba(30, 41, 59, 0.6);
+                --border: rgba(51, 65, 85, 0.5);
+            }
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
@@ -29,241 +44,342 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 15px;
+            padding: 12px;
         }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
 
         .app-container {
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 25px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(25px);
             border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm), var(--shadow-glow);
         }
 
         .header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0 0 24px 0;
             text-align: center;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            color: var(--accent-primary);
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
-        
-        input {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 600;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        input:focus { border-color: var(--accent-primary); }
-        input:read-only { background: rgba(0,0,0,0.2); color: var(--accent-primary); }
-
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .pill-group { display: flex; gap: 5px; background: var(--input-bg); padding: 5px; border-radius: 10px; border: 1.5px solid var(--border); }
-        .pill { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px; border-radius: 7px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
-        .pill.active { background: var(--accent-primary); color: white; }
-
-        .atr-toggle-area {
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin: 8px 0 8px 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 20px 0 10px;
-            padding: 10px;
-            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .full-width { grid-column: span 2; }
+
+        .input-box, .pill-container {
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .input-box:focus-within, .pill-container.active-focus {
+            border-color: var(--accent-primary);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-box label, .pill-container label { 
+            display: block; 
+            font-size: 0.85rem; 
+            color: var(--text-dim); 
+            margin-bottom: 6px; 
+            font-weight: 800; 
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        .input-box input { width: 100%; border: none; background: transparent; color: var(--text-main); font-size: 1.15rem; font-weight: 700; outline: none; }
+
+        .pill-group { display: flex; gap: 6px; }
+
+        .pill {
+            flex: 1;
+            border: none;
+            background: rgba(0,0,0,0.03);
+            padding: 10px 2px;
             border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .switch { position: relative; width: 40px; height: 20px; }
+        .pill.active { background: var(--accent-primary); color: #fff; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25); }
+
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #475569; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background: var(--accent-primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-primary); }
+        input:checked + .slider:before { transform: translateX(16px); }
 
-        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
-        .btn { padding: 15px; border: none; border-radius: 12px; font-weight: 800; color: white; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-buy { background: var(--buy-color); }
-        .btn-sell { background: var(--sell-color); }
-        .btn:active { transform: scale(0.95); }
+        .atr-disabled { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
 
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background: #0f172a;
-            border-radius: var(--radius);
-            display: none;
-            border: 1px solid var(--accent-primary);
+        .action-area { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+        .btn { padding: 20px; border: none; border-radius: var(--radius-md); font-size: 1.1rem; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .btn:active { transform: scale(0.96); }
+        .btn-sell { background: var(--sell-color); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.2); }
+        .btn-buy { background: var(--buy-color); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.2); }
+
+        .result-card {
+            margin-top: 24px; background: #0f172a; border-radius: var(--radius-md);
+            padding: 22px; color: #f8fafc; display: none; border: 1px solid rgba(255,255,255,0.08);
+            animation: slideUp 0.4s ease-out;
         }
 
-        .res-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
-        .res-val { font-weight: 800; color: var(--accent-primary); }
-        .res-lot { text-align: center; font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 15px; }
-        .res-lot small { display: block; font-size: 0.7rem; color: var(--text-dim); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .hidden { display: none; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        
+        .main-lot { 
+            grid-column: span 2; 
+            background: rgba(99, 102, 241, 0.15); 
+            padding: 20px 10px; 
+            border-radius: 16px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.3); 
+        }
+        .main-lot label {
+            font-size: 0.85rem; 
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .main-lot div { 
+            font-size: 2.1rem;
+            font-weight: 800; 
+            color: #818cf8; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 100%;
+            padding-left: 36px;
+            gap: 10px;
+        }
+        
+        .res-item label { font-size: 0.8rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; display: block; text-transform: uppercase;}
+        .res-item div { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .rr-badge { grid-column: span 2; text-align: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 1rem; border: 1px dashed #334155; color: #e2e8f0; }
+
+        .copy-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 8px; padding: 6px; cursor: pointer; color: white; transition: 0.2s; }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn svg { width: 14px; height: 14px; fill: currentColor; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="header"><h1>USDJPY CALC</h1></div>
-    
-    <form id="calcForm">
-        <div class="input-group">
-            <label>Account Balance ($)</label>
-            <input type="number" id="balance">
-        </div>
+    <div class="app-container">
+        <form id="calcForm" autocomplete="off">
+            <div class="header"><h1>USDJPY</h1></div>
 
-        <div class="row">
-            <div class="input-group">
-                <label>Risk %</label>
-                <div class="pill-group">
-                    <button type="button" class="pill active" onclick="setRisk(0.5, this)">0.5</button>
-                    <button type="button" class="pill" onclick="setRisk(1, this)">1.0</button>
+            <div class="bento-grid">
+                <div class="input-box full-width" onclick="this.querySelector('input').focus()">
+                    <label>Account Size ($)</label>
+                    <input type="number" id="accSize">
                 </div>
-                <input type="hidden" id="riskVal" value="0.5">
+
+                <div class="pill-container full-width active-focus" id="riskGroup" onclick="toggleFocus(this)">
+                    <label>Risk (%)</label>
+                    <div class="pill-group">
+                        <button type="button" class="pill active" onclick="setRisk(0.5, this)">0.50%</button>
+                        <button type="button" class="pill" onclick="setRisk(0.75, this)">0.75%</button>
+                        <button type="button" class="pill" onclick="setRisk(1, this)">1.00%</button>
+                    </div>
+                    <input type="hidden" id="riskVal" value="0.5">
+                </div>
+
+                <div class="input-box full-width" onclick="this.querySelector('input').focus()">
+                    <label>Entry Price </label>
+                    <input type="number" id="entry" step="0.001">
+                </div>
+
+                <div class="full-width">
+                    <span class="section-label">
+                        ATR  OFF / ON
+                        <label class="switch">
+                            <input type="checkbox" id="atrToggle" checked onchange="toggleATR()">
+                            <span class="slider"></span>
+                        </label>
+                    </span>
+                </div>
+
+                <div class="bento-grid full-width" id="atrBox">
+                    <div class="input-box" onclick="this.querySelector('input').focus()">
+                        <label> ATR  Price</label>
+                        <input type="number" id="atrInput" step="0.001">
+                    </div>
+                    <div class="pill-container active-focus" id="multGroup" onclick="toggleFocus(this)">
+                        <label>Multiplier</label>
+                        <div class="pill-group">
+                            <button type="button" class="pill" onclick="setMult(2.0, this)">2.0x</button>
+                            <button type="button" class="pill active" onclick="setMult(2.5, this)">2.5x</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-box" onclick="this.querySelector('input').focus()">
+                    <label>TP (Pips)</label>
+                    <input type="number" id="tpPips">
+                </div>
+                <div class="input-box" id="slManualBox" onclick="this.querySelector('input').focus()">
+                    <label>SL (Pips)</label>
+                    <input type="number" id="slPips">
+                </div>
+                
+                <input type="hidden" id="multVal" value="2.5">
             </div>
-            <div class="input-group">
-                <label>Entry Price</label>
-                <input type="number" id="entry" step="0.001">
+
+            <div class="action-area">
+                <button type="button" class="btn btn-sell" onclick="runCalc('short')">Sell </button>
+                <button type="button" class="btn btn-buy" onclick="runCalc('long')">Buy </button>
             </div>
-        </div>
+        </form>
 
-        <div class="atr-toggle-area">
-            <span style="font-size: 0.8rem; font-weight: 800;">USE ATR FOR SL</span>
-            <label class="switch">
-                <input type="checkbox" id="atrToggle" checked onchange="toggleATR()">
-                <span class="slider"></span>
-            </label>
-        </div>
+        <div id="resBox" class="result-card"></div>
+    </div>
 
-        <div id="atrInputs" class="row">
-            <div class="input-group">
-                <label>ATR Value</label>
-                <input type="number" id="atrValue" step="0.001">
-            </div>
-            <div class="input-group">
-                <label>Multiplier</label>
-                <input type="number" id="atrMult" step="0.1" value="2.5">
-            </div>
-        </div>
+    <script>
+        window.onload = () => {
+            document.getElementById('calcForm').reset();
+            document.getElementById('resBox').style.display = 'none';
+        };
 
-        <div class="row">
-            <div class="input-group">
-                <label>TP (Pips)</label>
-                <input type="number" id="tpPips">
-            </div>
-            <div class="input-group">
-                <label id="slLabel">SL (Pips)</label>
-                <input type="number" id="slPips">
-            </div>
-        </div>
-
-        <div class="action-btns">
-            <button type="button" class="btn btn-sell" onclick="calculate('short')">Sell</button>
-            <button type="button" class="btn btn-buy" onclick="calculate('long')">Buy</button>
-        </div>
-    </form>
-
-    <div id="result" class="result-box"></div>
-</div>
-
-<script>
-    // خالی کردن همه فیلدها هنگام رفرش
-    window.onload = () => {
-        document.getElementById('calcForm').reset();
-        toggleATR();
-    };
-
-    function setRisk(val, el) {
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('riskVal').value = val;
-    }
-
-    function toggleATR() {
-        const isAtr = document.getElementById('atrToggle').checked;
-        const slInput = document.getElementById('slPips');
-        const atrSection = document.getElementById('atrInputs');
-        
-        atrSection.style.opacity = isAtr ? "1" : "0.3";
-        atrSection.style.pointerEvents = isAtr ? "auto" : "none";
-        slInput.readOnly = isAtr;
-        document.getElementById('slLabel').innerText = isAtr ? "SL (Calculated)" : "SL (Manual)";
-        if(isAtr) slInput.value = ""; 
-    }
-
-    function fillRandoms() {
-        const balance = document.getElementById('balance');
-        const entry = document.getElementById('entry');
-        const atr = document.getElementById('atrValue');
-        const tp = document.getElementById('tpPips');
-        const sl = document.getElementById('slPips');
-        const isAtr = document.getElementById('atrToggle').checked;
-
-        if (!balance.value) balance.value = 10000;
-        if (!entry.value) entry.value = (Math.random() * (155 - 145) + 145).toFixed(3);
-        if (isAtr && !atr.value) atr.value = (Math.random() * (0.6 - 0.2) + 0.2).toFixed(3);
-        if (!tp.value) tp.value = 50;
-        if (!isAtr && !sl.value) sl.value = 20;
-    }
-
-    function calculate(side) {
-        // ۱. پر کردن فیلدهای خالی قبل از هر چیز
-        fillRandoms();
-
-        const bal = parseFloat(document.getElementById('balance').value);
-        const riskP = parseFloat(document.getElementById('riskVal').value);
-        const entry = parseFloat(document.getElementById('entry').value);
-        const tpPips = parseFloat(document.getElementById('tpPips').value);
-        const isAtr = document.getElementById('atrToggle').checked;
-        
-        let slPips;
-
-        // ۲. منطق ATR: محاسبه پیپ و قرار دادن در باکس SL
-        if (isAtr) {
-            const atr = parseFloat(document.getElementById('atrValue').value);
-            const mult = parseFloat(document.getElementById('atrMult').value);
-            slPips = (atr * mult) / 0.01; 
-            document.getElementById('slPips').value = slPips.toFixed(1); // نمایش در ورودی
-        } else {
-            slPips = parseFloat(document.getElementById('slPips').value);
+        function toggleFocus(el) {
+            el.classList.add('active-focus');
         }
 
-        const riskAmount = bal * (riskP / 100);
-        // محاسبه لات سایز برای USDJPY
-        const pipValue = (100000 * 0.01) / entry;
-        const lotSize = riskAmount / (slPips * pipValue);
+        function setRisk(v, b) {
+            event.stopPropagation();
+            b.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('riskVal').value = v;
+        }
 
-        // محاسبه قیمت‌ها
-        const slPrice = side === 'long' ? entry - (slPips * 0.01) : entry + (slPips * 0.01);
-        const tpPrice = side === 'long' ? entry + (tpPips * 0.01) : entry - (tpPips * 0.01);
-        const rr = (tpPips / slPips).toFixed(2);
+        function setMult(v, b) {
+            event.stopPropagation();
+            b.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('multVal').value = v;
+        }
 
-        // نمایش نتایج
-        const resDiv = document.getElementById('result');
-        resDiv.style.display = 'block';
-        resDiv.innerHTML = `
-            <div class="res-lot"><small>LOT SIZE</small>${lotSize.toFixed(2)}</div>
-            <div class="res-row"><span>TP Price:</span><span class="res-val">${tpPrice.toFixed(3)}</span></div>
-            <div class="res-row"><span>SL Price:</span><span class="res-val">${slPrice.toFixed(3)}</span></div>
-            <div class="res-row"><span>Risk Amount:</span><span class="res-val" style="color:#f43f5e">$${riskAmount.toFixed(2)}</span></div>
-            <div class="res-row"><span>R:R Ratio:</span><span class="res-val">1 : ${rr}</span></div>
-        `;
-    }
-</script>
+        function toggleATR() {
+            const active = document.getElementById('atrToggle').checked;
+            document.getElementById('atrBox').classList.toggle('atr-disabled', !active);
+        }
 
+        async function copy(t, b) {
+            await navigator.clipboard.writeText(t);
+            const old = b.innerHTML;
+            b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+            setTimeout(() => b.innerHTML = old, 1000);
+        }
+
+        function runCalc(type) {
+            const getVal = (id, min, max) => {
+                const el = document.getElementById(id);
+                if (el.value === "" || isNaN(parseFloat(el.value))) {
+                    return (Math.random() * (max - min) + min);
+                }
+                return parseFloat(el.value);
+            };
+
+            const acc = getVal('accSize', 5000, 20000);
+            const riskP = parseFloat(document.getElementById('riskVal').value);
+            const entP = getVal('entry', 150.000, 155.000);
+            const useATR = document.getElementById('atrToggle').checked;
+            
+            let stopPips;
+            if(useATR) {
+                const av = getVal('atrInput', 0.300, 0.500);
+                const m = parseFloat(document.getElementById('multVal').value);
+                // برای USDJPY هر پیپ 0.01 است
+                stopPips = (av * m) / 0.01;
+            } else {
+                stopPips = getVal('slPips', 15, 30);
+            }
+
+            const takePips = getVal('tpPips', stopPips * 1.5, stopPips * 3);
+            
+            const riskUSD = acc * (riskP / 100);
+            const pipVal = (100000 * 0.01) / entP;
+            const lots = riskUSD / (stopPips * pipVal);
+            
+            const slPrice = type === 'long' ? entP - (stopPips * 0.01) : entP + (stopPips * 0.01);
+            const tpPrice = type === 'long' ? entP + (takePips * 0.01) : entP - (takePips * 0.01);
+            const profit = riskUSD * (takePips / stopPips);
+            const rr = (takePips / stopPips).toFixed(2);
+
+            const out = document.getElementById('resBox');
+            out.style.display = 'block';
+            const ico = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+
+            out.innerHTML = `
+                <div class="res-grid">
+                    <div class="main-lot">
+                        <label>Position Size</label>
+                        <div>${lots.toFixed(2)} <button class="copy-btn" onclick="copy('${lots.toFixed(2)}', this)\">${ico}</button></div>
+                    </div>
+                    <div class="res-item">
+                        <label>TP Price</label>
+                        <div>${tpPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${tpPrice.toFixed(3)}', this)\">${ico}</button></div>
+                    </div>
+                    <div class="res-item">
+                        <label>SL Price</label>
+                        <div>${slPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${slPrice.toFixed(3)}', this)\">${ico}</button></div>
+                    </div>
+                    <div class="res-item">
+                        <label>TP Pips</label>
+                        <div style="color:#10b981">${takePips.toFixed(1)}</div>
+                    </div>
+                    <div class="res-item">
+                        <label>SL Pips</label>
+                        <div style="color:#f43f5e">${stopPips.toFixed(1)}</div>
+                    </div>
+                    <div class="res-item"><label>Profit</label><div style="color:#10b981">+$${profit.toFixed(2)}</div></div>
+                    <div class="res-item"><label>Loss</label><div style="color:#f43f5e">-$${riskUSD.toFixed(2)}</div></div>
+                    <div class="rr-badge">Risk : Reward  &nbsp; <b>1 : ${rr}</b></div>
+                </div>
+            `;
+            out.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    </script>
 </body>
 </html>
