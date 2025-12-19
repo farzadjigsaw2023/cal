@@ -21,6 +21,13 @@
             --radius-md: 16px;
             --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-glow: 0 10px 15px -3px rgba(79, 70, 229, 0.15);
+            
+            /* Result Card Specific */
+            --res-bg: #ffffff;
+            --res-border: #e2e8f0;
+            --res-text: #0f172a;
+            --res-label: #64748b;
+            --res-box-bg: rgba(79, 70, 229, 0.05);
         }
 
         @media (prefers-color-scheme: dark) {
@@ -31,6 +38,12 @@
                 --text-dim: #94a3b8;
                 --input-bg: rgba(30, 41, 59, 0.6);
                 --border: rgba(51, 65, 85, 0.5);
+                
+                --res-bg: #0f172a;
+                --res-border: rgba(255,255,255,0.1);
+                --res-text: #f8fafc;
+                --res-label: #94a3b8;
+                --res-box-bg: rgba(99, 102, 241, 0.15);
             }
         }
 
@@ -151,57 +164,124 @@
         .btn { padding: 20px; border: none; border-radius: var(--radius-md); font-size: 1.1rem; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
         .btn:active { transform: scale(0.96); }
         .btn-sell { background: var(--sell-color); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.2); }
-        .btn-buy { background: var(--buy-color); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.2); }
+        .btn-buy { background: var(--buy-color); box-shadow: 0 6px 150px rgba(5, 150, 105, 0.2); }
 
+        /* --- Updated Result Card Section --- */
         .result-card {
-            margin-top: 24px; background: #0f172a; border-radius: var(--radius-md);
-            padding: 22px; color: #f8fafc; display: none; border: 1px solid rgba(255,255,255,0.08);
-            animation: slideUp 0.4s ease-out;
+            margin-top: 24px; 
+            background: var(--res-bg); 
+            border-radius: var(--radius-md);
+            padding: 22px; 
+            color: var(--res-text); 
+            display: none; 
+            border: 1px solid var(--res-border);
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
         .main-lot { 
             grid-column: span 2; 
-            background: rgba(99, 102, 241, 0.15); 
-            padding: 20px 10px; 
+            background: var(--res-box-bg); 
+            padding: 16px; 
             border-radius: 16px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center;
             text-align: center;
-            border: 1px solid rgba(99, 102, 241, 0.3); 
-        }
-        .main-lot label {
-            font-size: 0.85rem; 
-            color: #94a3b8;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .main-lot div { 
-            font-size: 2.1rem;
-            font-weight: 800; 
-            color: #818cf8; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            width: 100%;
-            padding-left: 36px;
-            gap: 10px;
+            border: 1px solid var(--accent-primary);
+            margin-bottom: 4px;
         }
         
-        .res-item label { font-size: 0.8rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; display: block; text-transform: uppercase;}
-        .res-item div { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .rr-badge { grid-column: span 2; text-align: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 1rem; border: 1px dashed #334155; color: #e2e8f0; }
+        .main-lot label {
+            font-size: 0.75rem; 
+            color: var(--res-label);
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        .copy-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 8px; padding: 6px; cursor: pointer; color: white; transition: 0.2s; }
-        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        /* Fixed Mobile Pos Size */
+        .val-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .main-lot-val { 
+            font-size: 2rem; 
+            font-weight: 900; 
+            color: var(--accent-primary);
+        }
+        
+        .res-item {
+            background: rgba(0,0,0,0.02);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--res-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .res-item { background: rgba(255,255,255,0.03); }
+        }
+
+        .res-item label { 
+            font-size: 0.7rem; 
+            color: var(--res-label); 
+            font-weight: 700; 
+            margin-bottom: 6px; 
+            text-transform: uppercase;
+        }
+
+        .res-item .val-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .rr-badge { 
+            grid-column: span 2; 
+            text-align: center; 
+            padding: 12px; 
+            background: var(--res-box-bg); 
+            border-radius: 12px; 
+            font-size: 0.95rem; 
+            border: 1px dashed var(--accent-primary); 
+            color: var(--res-text); 
+            font-weight: 600;
+        }
+
+        /* Standardized Copy Button */
+        .copy-btn { 
+            background: var(--accent-primary); 
+            border: none; 
+            border-radius: 6px; 
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; 
+            color: white; 
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .copy-btn:hover { opacity: 0.9; transform: scale(1.05); }
         .copy-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        @media (max-width: 370px) {
+            .main-lot-val { font-size: 1.6rem; }
+            .app-container { padding: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -213,7 +293,7 @@
             <div class="bento-grid">
                 <div class="input-box full-width" onclick="this.querySelector('input').focus()">
                     <label>Account Size ($)</label>
-                    <input type="number" id="accSize">
+                    <input type="number" id="accSize" placeholder="e.g. 10000">
                 </div>
 
                 <div class="pill-container full-width active-focus" id="riskGroup" onclick="toggleFocus(this)">
@@ -228,7 +308,7 @@
 
                 <div class="input-box full-width" onclick="this.querySelector('input').focus()">
                     <label>Entry Price </label>
-                    <input type="number" id="entry" step="0.001">
+                    <input type="number" id="entry" step="0.001" placeholder="150.000">
                 </div>
 
                 <div class="full-width">
@@ -309,7 +389,11 @@
             await navigator.clipboard.writeText(t);
             const old = b.innerHTML;
             b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
-            setTimeout(() => b.innerHTML = old, 1000);
+            b.style.background = '#059669';
+            setTimeout(() => {
+                b.innerHTML = old;
+                b.style.background = '';
+            }, 1000);
         }
 
         function runCalc(type) {
@@ -330,14 +414,12 @@
             if(useATR) {
                 const av = getVal('atrInput', 0.300, 0.500);
                 const m = parseFloat(document.getElementById('multVal').value);
-                // برای USDJPY هر پیپ 0.01 است
                 stopPips = (av * m) / 0.01;
             } else {
                 stopPips = getVal('slPips', 15, 30);
             }
 
             const takePips = getVal('tpPips', stopPips * 1.5, stopPips * 3);
-            
             const riskUSD = acc * (riskP / 100);
             const pipVal = (100000 * 0.01) / entP;
             const lots = riskUSD / (stopPips * pipVal);
@@ -354,28 +436,44 @@
             out.innerHTML = `
                 <div class="res-grid">
                     <div class="main-lot">
-                        <label>Position Size</label>
-                        <div>${lots.toFixed(2)} <button class="copy-btn" onclick="copy('${lots.toFixed(2)}', this)\">${ico}</button></div>
+                        <label>Position Size (Lots)</label>
+                        <div class="val-container">
+                            <span class="main-lot-val">${lots.toFixed(2)}</span>
+                            <button class="copy-btn" onclick="copy('${lots.toFixed(2)}', this)">${ico}</button>
+                        </div>
                     </div>
+                    
                     <div class="res-item">
                         <label>TP Price</label>
-                        <div>${tpPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${tpPrice.toFixed(3)}', this)\">${ico}</button></div>
+                        <div class="val-row">
+                            <span>${tpPrice.toFixed(3)}</span>
+                            <button class="copy-btn" onclick="copy('${tpPrice.toFixed(3)}', this)">${ico}</button>
+                        </div>
                     </div>
+                    
                     <div class="res-item">
                         <label>SL Price</label>
-                        <div>${slPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${slPrice.toFixed(3)}', this)\">${ico}</button></div>
+                        <div class="val-row">
+                            <span>${slPrice.toFixed(3)}</span>
+                            <button class="copy-btn" onclick="copy('${slPrice.toFixed(3)}', this)">${ico}</button>
+                        </div>
                     </div>
+
                     <div class="res-item">
-                        <label>TP Pips</label>
-                        <div style="color:#10b981">${takePips.toFixed(1)}</div>
+                        <label>SL Distance</label>
+                        <div class="val-row" style="color:#f43f5e">
+                            <span>${stopPips.toFixed(1)} Pips</span>
+                        </div>
                     </div>
+
                     <div class="res-item">
-                        <label>SL Pips</label>
-                        <div style="color:#f43f5e">${stopPips.toFixed(1)}</div>
+                        <label>Target Profit</label>
+                        <div class="val-row" style="color:#10b981">
+                            <span>+$${profit.toFixed(0)}</span>
+                        </div>
                     </div>
-                    <div class="res-item"><label>Profit</label><div style="color:#10b981">+$${profit.toFixed(2)}</div></div>
-                    <div class="res-item"><label>Loss</label><div style="color:#f43f5e">-$${riskUSD.toFixed(2)}</div></div>
-                    <div class="rr-badge">Risk : Reward  &nbsp; <b>1 : ${rr}</b></div>
+
+                    <div class="rr-badge">Risk Reward Ratio &nbsp; <span style="color:var(--accent-primary)">1 : ${rr}</span></div>
                 </div>
             `;
             out.scrollIntoView({ behavior: 'smooth', block: 'end' });
