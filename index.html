@@ -151,7 +151,7 @@
         .btn { padding: 20px; border: none; border-radius: var(--radius-md); font-size: 1.1rem; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
         .btn:active { transform: scale(0.96); }
         .btn-sell { background: var(--sell-color); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.2); }
-        .btn-buy { background: var(--buy-color); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.2); }
+        .btn-buy { background: var(--buy-color); box-shadow: 0 6px 150, 105, 0.2); }
 
         .result-card {
             margin-top: 24px; background: #0f172a; border-radius: var(--radius-md);
@@ -256,12 +256,18 @@
                 </div>
 
                 <div class="input-box" onclick="this.querySelector('input').focus()">
-                    <label>TP</label>
+                    <label>Spread (Points)</label>
+                    <input type="number" id="spreadPoints" placeholder="e.g. 10">
+                </div>
+
+                <div class="input-box" onclick="this.querySelector('input').focus()">
+                    <label>TP (Pips)</label>
                     <input type="number" id="tpPips">
                 </div>
-                <div class="input-box" id="slManualBox" onclick="this.querySelector('input').focus()">
-                    <label>SL</label>
-                    <input type="number" id="slPips">
+
+                <div class="input-box full-width" id="slManualBox" onclick="this.querySelector('input').focus()">
+                    <label>Final SL (Pips + Spread)</label>
+                    <input type="number" id="slPips" readonly style="color: var(--accent-primary);">
                 </div>
                 
                 <input type="hidden" id="multVal" value="2.5">
@@ -316,35 +322,46 @@
             const getVal = (id, min, max) => {
                 const el = document.getElementById(id);
                 if (el.value === "" || isNaN(parseFloat(el.value))) {
-                    return (Math.random() * (max - min) + min);
+                    return 0;
                 }
                 return parseFloat(el.value);
             };
 
-            const acc = getVal('accSize', 5000, 20000);
+            const acc = getVal('accSize', 10000, 10000);
             const riskP = parseFloat(document.getElementById('riskVal').value);
-            const entP = getVal('entry', 150.000, 155.000);
+            const entP = getVal('entry', 150.000, 150.000);
+            const spreadInput = getVal('spreadPoints', 0, 0);
+            const spreadPips = spreadInput / 10; // تبدیل پوینت به پیپ
+
             const useATR = document.getElementById('atrToggle').checked;
             
-            let stopPips;
+            let baseStopPips;
             if(useATR) {
-                const av = getVal('atrInput', 0.300, 0.500);
+                const av = getVal('atrInput', 0, 0);
                 const m = parseFloat(document.getElementById('multVal').value);
-                stopPips = (av * m) / 0.01;
+                baseStopPips = (av * m) / 0.01;
             } else {
-                stopPips = getVal('slPips', 15, 30);
+                baseStopPips = getVal('slPips', 0, 0);
             }
 
-            const takePips = getVal('tpPips', stopPips * 1.5, stopPips * 3);
+            // استاپ نهایی = استاپ تکنیکال + مقدار اسپرد
+            const finalStopPips = baseStopPips + spreadPips;
+
+            if (finalStopPips <= 0) return;
+
+            // نمایش عدد نهایی در کادر SL
+            document.getElementById('slPips').value = finalStopPips.toFixed(1);
+
+            const takePips = getVal('tpPips', 0, 0) || (finalStopPips * 1.2);
             
             const riskUSD = acc * (riskP / 100);
             const pipVal = (100000 * 0.01) / entP;
-            const lots = riskUSD / (stopPips * pipVal);
+            const lots = riskUSD / (finalStopPips * pipVal);
             
-            const slPrice = type === 'long' ? entP - (stopPips * 0.01) : entP + (stopPips * 0.01);
+            const slPrice = type === 'long' ? entP - (finalStopPips * 0.01) : entP + (finalStopPips * 0.01);
             const tpPrice = type === 'long' ? entP + (takePips * 0.01) : entP - (takePips * 0.01);
-            const profit = riskUSD * (takePips / stopPips);
-            const rr = (takePips / stopPips).toFixed(2);
+            const profit = riskUSD * (takePips / finalStopPips);
+            const rr = (takePips / finalStopPips).toFixed(2);
 
             const out = document.getElementById('resBox');
             out.style.display = 'block';
@@ -353,15 +370,15 @@
             out.innerHTML = `
                 <div class="res-grid">
                     <div class="main-lot">
-                        <label>Position Size</label>
+                        <label>Position Size (Lots)</label>
                         <div>${lots.toFixed(2)} <button class="copy-btn" onclick="copy('${lots.toFixed(2)}', this)\">${ico}</button></div>
                     </div>
                     <div class="res-item">
-                        <label>TP</label>
+                        <label>TP Price</label>
                         <div>${tpPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${tpPrice.toFixed(3)}', this)\">${ico}</button></div>
                     </div>
                     <div class="res-item">
-                        <label>SL</label>
+                        <label>SL Price</label>
                         <div>${slPrice.toFixed(3)} <button class="copy-btn" onclick="copy('${slPrice.toFixed(3)}', this)\">${ico}</button></div>
                     </div>
                     <div class="res-item"><label>Profit</label><div style="color:#10b981">+$${profit.toFixed(2)}</div></div>
