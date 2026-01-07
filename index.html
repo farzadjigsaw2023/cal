@@ -29,7 +29,7 @@
                 --text: #ffffff;
                 --text-sec: #8e8e93;
                 --brand-alt: #1e40af;
-                --btn-text: #000000; /* متن دکمه‌ها در حالت دارک مشکی شد */
+                --btn-text: #000000;
             }
         }
 
@@ -151,7 +151,7 @@
                         <button type="button" class="selector-btn" onclick="set('pair', 'EURJPY', this)">EURJPY</button>
                     </div>
                 </div>
-                <div class="cell"><label>Balance ($)</label><input type="number" id="accSize" value="" placeholder="" inputmode="decimal"></div>
+                <div class="cell"><label>Balance ($)</label><input type="number" id="accSize" value="" placeholder="0" inputmode="decimal"></div>
             </div>
 
             <div class="group">
@@ -163,11 +163,11 @@
                         <button type="button" class="selector-btn" onclick="set('risk', 1, this)">1%</button>
                     </div>
                 </div>
-                <div class="cell"><label>Entry Price</label><input type="number" id="entry" step="0.001" placeholder="" inputmode="decimal"></div>
+                <div class="cell"><label>Entry Price</label><input type="number" id="entry" step="0.001" placeholder="0.000" inputmode="decimal"></div>
             </div>
 
             <div class="group">
-                <div class="cell"><label>ATR Value</label><input type="number" id="atrInput" step="0.001" placeholder="" inputmode="decimal"></div>
+                <div class="cell"><label>ATR Value</label><input type="number" id="atrInput" step="0.001" placeholder="0.000" inputmode="decimal"></div>
                 <div class="cell">
                     <label>Multiplier</label>
                     <div class="selector">
@@ -178,8 +178,8 @@
             </div>
 
             <div class="group">
-                <div class="cell"><label>TP Pips (Manual)</label><input type="number" id="tpPips" placeholder="" inputmode="decimal"></div>
-                <div class="cell"><label>SL Pips (Auto)</label><input type="number" id="slPipsAuto" placeholder="" readonly></div>
+                <div class="cell"><label>TP Pips (Manual)</label><input type="number" id="tpPips" placeholder="0" inputmode="decimal"></div>
+                <div class="cell"><label>SL Pips (Auto)</label><input type="number" id="slPipsAuto" placeholder="0" readonly></div>
             </div>
 
             <input type="hidden" id="pairVal" value="USDJPY">
@@ -196,7 +196,7 @@
             <div class="result-card">
                 <button class="lot-btn" onclick="copyValue('rLot')">
                     <div class="lot-info">
-                        <span> Position Size</span>
+                        <span> Position Size (Lots)</span>
                         <strong id="rLot">0.00</strong>
                     </div>
                 </button>
@@ -256,15 +256,19 @@
                 return;
             }
 
-            // اسپرد روی 3.0 تنظیم شد طبق درخواست شما
-            const spread = 3.0;
-            const slPips = ((atr * mult) / 0.01) + spread;
+            // محاسبه دقیق پیپ استاپ لاس فقط بر اساس ATR و ضریب (حذف اسپرد)
+            const slPips = (atr * mult) / 0.01;
+            
+            // استفاده از تی‌پی دستی یا پیش‌فرض دو برابر استاپ
             const tpPips = manTP > 0 ? manTP : (slPips * 2);
 
             const riskUSD = acc * (riskP / 100);
-            // تقریب ارزش پیپ برای جفت ارزهای JPY
-            const pipValue = (0.01 / 150.0) * 100000; 
-            const lots = riskUSD / (slPips * pipValue);
+
+            // محاسبه ارزش پیپ برای جفت‌ارزهای JPY (قیمت / 0.01)
+            const pipValuePerLot = (0.01 / entry) * 100000;
+            
+            // حجم لات دقیق
+            const lots = riskUSD / (slPips * pipValuePerLot);
 
             const slPrice = side === 'long' ? entry - (slPips * 0.01) : entry + (slPips * 0.01);
             const tpPrice = side === 'long' ? entry + (tpPips * 0.01) : entry - (tpPips * 0.01);
@@ -274,7 +278,9 @@
             document.getElementById('rTP').innerText = tpPrice.toFixed(3);
             document.getElementById('rSL').innerText = slPrice.toFixed(3);
             document.getElementById('rRisk').innerText = '-$' + riskUSD.toFixed(2);
-            document.getElementById('rReward').innerText = '+$' + (riskUSD * (tpPips/slPips)).toFixed(2);
+            
+            const rewardUSD = (riskUSD * (tpPips / slPips));
+            document.getElementById('rReward').innerText = '+$' + rewardUSD.toFixed(2);
 
             document.getElementById('receipt').style.display = 'block';
             setTimeout(() => {
